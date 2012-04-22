@@ -17,7 +17,6 @@ If you need them look here:
 
 ## Brief How-To Include:
 
------------------------------------
 
 Git BASH:
 
