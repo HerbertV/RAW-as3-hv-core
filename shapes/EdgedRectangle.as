@@ -24,7 +24,7 @@ package as3.hv.core.shapes
 	import flash.display.Graphics;
 	
 	// =========================================================================
-	// Class EdgedRectangleShape
+	// Class EdgedRectangle
 	// =========================================================================
 	// for drawing Rectangles with cut off corners.
 	//       _____
@@ -34,7 +34,7 @@ package as3.hv.core.shapes
 	//
 	// you can choose which corners are cut.
 	//
-	public class EdgedRectangleShape
+	public class EdgedRectangle
 	{
 		// =====================================================================
 		// CONSTANTS
@@ -193,9 +193,7 @@ package as3.hv.core.shapes
 			
 			if( filled )
 				g.endFill();
-		}
-		
+		}	
 	
 	}
-
 }
