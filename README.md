@@ -4,10 +4,10 @@
 
 *RAW version of my Actionscript 3 classes.*
 
-So they can easily be included as submodl into other repos.
-RAW means with out examples and docs.
+So they can easily be included as submodule into other repos.
+RAW means without examples and docs, but with comments.  
 
-If you need them look here:
+If you need examples or docs look here:
 [https://github.com/HerbertV/as3-hv](https://github.com/HerbertV/as3-hv)
 
 *Work in progress... so stay tuned* ;)
