@@ -18,7 +18,7 @@
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  */
-package as3.hv.utils
+package as3.hv.core.utils
 {
 	// =========================================================================
 	// Class StringHelper
@@ -59,9 +59,8 @@ package as3.hv.utils
 				newSubStr:String 
 			):String 
 		{
-        	return str.split(oldSubStr).join(newSubStr);
-    	}
-		
+			return str.split(oldSubStr).join(newSubStr);
+		}
 		
 		/**
 		 * ---------------------------------------------------------------------
