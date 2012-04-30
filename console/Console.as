@@ -21,6 +21,8 @@
 package as3.hv.core.console
 {
 	import flash.geom.Rectangle;
+	import flash.geom.Point;
+	
 	import flash.display.Sprite;
 	import flash.display.Shape;
 	
@@ -34,11 +36,13 @@ package as3.hv.core.console
 
 	import flash.ui.Keyboard;
 	
-	import flash.system.Capabilities;
-	
 	import as3.hv.core.utils.StringHelper;
+	
 	import as3.hv.core.shapes.EdgedRectangle;
+	import as3.hv.core.shapes.PenroseTriangle;
+	
 	import as3.hv.core.console.cmd.*;
+	
 	
 	// =========================================================================
 	// Class Console
@@ -111,7 +115,9 @@ package as3.hv.core.console
 		
 		private var doAutoScroll:Boolean = true;
 		
+		// for show/hide console
 		private var toggleKey:uint = 220; //^
+		
 		
 		// command stack for storing the last commands
 		private var arrCmdStack:Array = new Array();
@@ -146,7 +152,7 @@ package as3.hv.core.console
 			hdformat.bold = true;
 			this.txtHeadline.defaultTextFormat = hdformat;
 			this.txtHeadline.text = "CONSOLE -- Version "+VERSION;
-			this.txtHeadline.x = 10;
+			this.txtHeadline.x = 35;
 			this.txtHeadline.y = 5;
 			this.txtHeadline.height = 20;
 			this.txtHeadline.selectable = false;
@@ -169,7 +175,7 @@ package as3.hv.core.console
 			this.registerCommand( CmdHelp.CMD, new CmdHelp() );
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
-			
+			this.registerCommand( CmdSystem.CMD, new CmdSystem() );
 			
 			clearOutput();
 		}
@@ -200,74 +206,114 @@ package as3.hv.core.console
 		override protected function layout():void
 		{
 			super.layout();
-			bgHeadline.graphics.clear();
-			EdgedRectangle.drawGraphics(
-					bgHeadline.graphics,
-					1,
-					1,
-					currentWidth-2,
-					25,
-					new Array(10,5,3,-1),
-					1,
-					0x000000,
-					1.0,
-					true,
-					0xCCCCDD,
-					0.8
-				);
-			this.txtHeadline.width = currentWidth - 20;
 			
-			this.dragHandle.graphics.clear();
-			this.dragHandle.graphics.lineStyle();
-			this.dragHandle.graphics.beginFill(0xFF0000,0.0);
-			this.dragHandle.graphics.drawRect(1,1,currentWidth-2,25);
-			this.dragHandle.graphics.endFill();
-						
-			// output
-			bgOutput.graphics.clear();
-			EdgedRectangle.drawGraphics(
-					bgOutput.graphics,
-					5,
-					30,
-					currentWidth-10,
-					currentHeight-60,
-					new Array(5,3),
-					1,
-					0x000000,
-					1.0,
-					true,
-					0xCCCCDD,
-					0.8
-				);
+			if( viewState == VIEW_STATE_MINIMIZED )
+			{
+				bgHeadline.graphics.clear();
+				bgHeadline.visible = false;
+				this.txtHeadline.visible = false;
+				
+				this.dragHandle.graphics.clear();
+				this.dragHandle.graphics.lineStyle();
+				this.dragHandle.graphics.beginFill(0xFF0000,0.0);
+				this.dragHandle.graphics.drawRect(1,1,minimizedWidth-2,minimizedHeight);
+				this.dragHandle.graphics.endFill();
+							
+				// output
+				bgOutput.graphics.clear();
+				bgOutput.visible = false;
+				txtOutput.visible = false;
+				
+				//commandline
+				bgCmdLine.graphics.clear();
+				bgCmdLine.visible = false;
+				
+				this.cmdLine.visible = false;
+				this.resizeHandle.visible = false;
+				
+				return;
+			}
 			
-			txtOutput.width = currentWidth - (CMDLINE_MARGIN_X*2);
-			txtOutput.height = currentHeight - 70;
-			txtOutput.x = CMDLINE_MARGIN_X;
-			txtOutput.y = 35;
-			
-			//commandline
-			bgCmdLine.graphics.clear();
-			EdgedRectangle.drawGraphics(
-					bgCmdLine.graphics,
-					5,
-					currentHeight - 28,
-					currentWidth - 10,
-					23,
-					new Array(5,3),
-					1,
-					0x000000,
-					1.0,
-					true,
-					0xCCCCDD,
-					0.8
-				);
-			
-			this.cmdLine.width = currentWidth - (CMDLINE_MARGIN_X*2);
-			this.cmdLine.height = CMDLINE_HEIGHT;
-			this.cmdLine.x = CMDLINE_MARGIN_X;
-			this.cmdLine.y = currentHeight - CMDLINE_MARGIN_Y - CMDLINE_HEIGHT;
-			this.cmdLine.text = cmdDefault;
-			this.cmdLine.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
+			if( viewState == VIEW_STATE_MAXIMIZED )
+			{
+				bgHeadline.graphics.clear();
+				bgHeadline.visible = true;
+				EdgedRectangle.drawGraphics(
+						bgHeadline.graphics,
+						1,
+						1,
+						currentWidth-2,
+						25,
+						new Array(10,5,3,-1),
+						1,
+						0x000000,
+						1.0,
+						true,
+						0xCCCCDD,
+						0.8
+					);
+				this.txtHeadline.width = currentWidth - (this.txtHeadline.x+2);
+				this.txtHeadline.visible = true;
+				
+				this.dragHandle.visible = true;
+				this.dragHandle.graphics.clear();
+				this.dragHandle.graphics.lineStyle();
+				this.dragHandle.graphics.beginFill(0xFF0000,0.0);
+				this.dragHandle.graphics.drawRect(1,1,currentWidth-2,25);
+				this.dragHandle.graphics.endFill();
+							
+				// output
+				this.bgOutput.graphics.clear();
+				this.bgOutput.visible = true;
+				EdgedRectangle.drawGraphics(
+						bgOutput.graphics,
+						5,
+						30,
+						currentWidth-10,
+						currentHeight-60,
+						new Array(5,3),
+						1,
+						0x000000,
+						1.0,
+						true,
+						0xCCCCDD,
+						0.8
+					);
+				
+				txtOutput.visible = true;
+				txtOutput.width = currentWidth - (CMDLINE_MARGIN_X*2);
+				txtOutput.height = currentHeight - 70;
+				txtOutput.x = CMDLINE_MARGIN_X;
+				txtOutput.y = 35;
+				
+				//commandline
+				bgCmdLine.visible = true;
+				bgCmdLine.graphics.clear();
+				EdgedRectangle.drawGraphics(
+						bgCmdLine.graphics,
+						5,
+						currentHeight - 28,
+						currentWidth - 10,
+						23,
+						new Array(5,3),
+						1,
+						0x000000,
+						1.0,
+						true,
+						0xCCCCDD,
+						0.8
+					);
+				
+				this.cmdLine.visible = true;
+				this.cmdLine.width = currentWidth - (CMDLINE_MARGIN_X*2);
+				this.cmdLine.height = CMDLINE_HEIGHT;
+				this.cmdLine.x = CMDLINE_MARGIN_X;
+				this.cmdLine.y = currentHeight - CMDLINE_MARGIN_Y - CMDLINE_HEIGHT;
+				this.cmdLine.text = cmdDefault;
+				this.cmdLine.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
+				
+				this.resizeHandle.visible = true;
+			}
 		}
 		
 			
@@ -423,8 +469,9 @@ package as3.hv.core.console
 		{
 			this.txtOutput.htmlText = this.txtOutput.htmlText 
 					+ "<font size='5'><br/></font>";
-			this.updateScrollbar();
-			
+			if( this.visible 
+					&& this.viewState == VIEW_STATE_MAXIMIZED )
+				this.updateScrollbar();
 		}
 		
 		/**
@@ -437,14 +484,11 @@ package as3.hv.core.console
 			this.txtOutput.htmlText = "";
 			
 			this.writeln(" &gt; &gt; CONSOLE READY &lt; &lt;",DebugLevel.INFO,false);
-
-//TODO move to system command
-//this.writeToConsole(" Flash Player "+ Capabilities.version ,DebugConsole.TYPE_INPUT);
-//this.writeToConsole(" "+this.getMyConfigString(),DebugConsole.TYPE_INPUT);
-
 			this.newLine();
-			this.updateScrollbar();
 			
+			if( this.visible 
+					&& this.viewState == VIEW_STATE_MAXIMIZED )
+				this.updateScrollbar();
 		}
 		
 		/**
@@ -519,15 +563,12 @@ package as3.hv.core.console
 			if( this.doAutoScroll )
 				this.txtOutput.scrollV = this.txtOutput.numLines;
 			
-			this.updateScrollbar();
+			if( this.visible 
+					&& this.viewState == VIEW_STATE_MAXIMIZED )
+				this.updateScrollbar();
 			
-
-// TODO show and expand console if fatalerror
-/*
-if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
-	this.switchConsole();
-}
-*/
+			if( level == DebugLevel.FATAL_ERROR ) 
+				this.visible = true;
 		}
 		
 		/**
@@ -541,7 +582,8 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			if( sbOutput == null )
 				return;
 			
-			if( txtOutput.maxScrollV == 1 )
+			if( txtOutput.maxScrollV == 1
+			   		|| viewState == VIEW_STATE_MINIMIZED )
 			{
 				sbOutput.visible = false;
 				return;
@@ -637,14 +679,61 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			this.cmdLine.type = TextFieldType.INPUT;
 			this.addChild(this.cmdLine);
 			
+			this.resizeHandle = new Sprite();
+			this.addChild(this.resizeHandle);
+			this.resizeHandle.graphics.lineStyle(0,0x000000);
+			this.resizeHandle.graphics.beginFill(0x0066FF);
+			this.resizeHandle.graphics.moveTo(0,-10);
+			this.resizeHandle.graphics.lineTo(4,-10);
+			this.resizeHandle.graphics.lineTo(4,0);
+			this.resizeHandle.graphics.lineTo(0,4);
+			this.resizeHandle.graphics.lineTo(-10,4);
+			this.resizeHandle.graphics.lineTo(-10,0);
+			this.resizeHandle.graphics.lineTo(0,-10);
+			this.resizeHandle.graphics.endFill();	
+			this.resizeHandle.x = currentWidth;
+			this.resizeHandle.y = currentHeight;
+			
+			this.setupResizing(
+					true,
+					currentWidth,
+					150,
+					currentWidth*2,
+					currentHeight*2
+				);
+			
+			// min max button
+			this.btnViewMinMax = new Sprite();
+			PenroseTriangle.drawGraphics(
+					this.btnViewMinMax.graphics,
+					new Point(0,0), 
+					50,
+					1,
+					0x606060,
+					1.0,
+					true,
+					new Array(0x0066FF,0x66CCFF,0xCCCCDD),
+					new Array(1.0,1.0,1.0)
+				);
+			this.btnViewMinMax.scaleY = this.btnViewMinMax.scaleX = 0.5; 
+			this.addChild(this.btnViewMinMax);
+			this.btnViewMinMax.x = 23;
+			this.btnViewMinMax.y = 11;
+			this.btnViewMinMax.addEventListener(
+					MouseEvent.CLICK, 
+					toggleViewState
+				);
+			
 			this.layout();
-			this.updateScrollbar();
+			
+			if( this.visible 
+					&& this.viewState == VIEW_STATE_MAXIMIZED )
+				this.updateScrollbar();
 			
 			stage.addEventListener(
 					KeyboardEvent.KEY_UP,
 					toggleConsole
 				);
-			
 		}
 		
 		/**
@@ -675,12 +764,18 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 					KeyboardEvent.KEY_UP,
 					toggleConsole
 				);
+			this.btnViewMinMax.removeEventListener(
+					MouseEvent.CLICK, 
+					toggleViewState
+				);
+			
 			
 			this.bgHeadline = null;
 			this.bgOutput = null;
 			this.sbOutput = null;
 			this.bgCmdLine = null;
 			this.cmdLine = null;
+			this.btnViewMinMax = null;
 		
 		}
 		
@@ -835,6 +930,30 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 		private function doScrollWheel(e:MouseEvent):void
 		{
 			updateScrollbar(false);
+		}
+		
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * resizing Event
+		 * ---------------------------------------------------------------------
+		 * overridden for scrollbar updates
+		 */
+		override protected function resizing(e:MouseEvent):void
+		{
+			super.resizing(e);
+			updateScrollbar();
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * toggleViewState Event
+		 * ---------------------------------------------------------------------
+		 */
+		override protected function toggleViewState(e:MouseEvent):void
+		{
+			super.toggleViewState(e);
+			updateScrollbar();
 		}
 	}
 }

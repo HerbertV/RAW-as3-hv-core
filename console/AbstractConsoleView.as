@@ -58,6 +58,9 @@ package as3.hv.core.console
 		protected var currentWidth:Number = 100;
 		protected var currentHeight:Number = 100;
 		
+		protected var minimizedWidth:Number = 50;
+		protected var minimizedHeight:Number = 25;
+		
 		// resizing stuff
 		protected var isResizeable:Boolean = false;
 		
@@ -76,6 +79,8 @@ package as3.hv.core.console
 				
 		// shape for drawing a background
 		protected var bgShape:Shape;
+		
+		protected var btnViewMinMax:Sprite;
 		
 		
 		// =====================================================================
@@ -126,22 +131,46 @@ package as3.hv.core.console
 		 */
 		protected function layout():void
 		{
-			bgShape.graphics.clear();
+			if( viewState == VIEW_STATE_MAXIMIZED )
+			{
+				bgShape.graphics.clear();
 			
-			EdgedRectangle.drawGraphics(
-					bgShape.graphics,
-					0,
-					0,
-					currentWidth,
-					currentHeight,
-					new Array(10,5),
-					2,
-					0x000000,
-					0.9,
-					true,
-					0xCCCCDD,
-					0.7
-				);
+				EdgedRectangle.drawGraphics(
+						bgShape.graphics,
+						0,
+						0,
+						currentWidth,
+						currentHeight,
+						new Array(10,5),
+						2,
+						0x000000,
+						0.9,
+						true,
+						0xCCCCDD,
+						0.7
+					);
+				return;
+			}
+			
+			if( viewState == VIEW_STATE_MINIMIZED )
+			{
+				bgShape.graphics.clear();
+			
+				EdgedRectangle.drawGraphics(
+						bgShape.graphics,
+						0,
+						0,
+						minimizedWidth,
+						minimizedHeight,
+						new Array(10,5),
+						2,
+						0x000000,
+						0.9,
+						true,
+						0xCCCCDD,
+						0.7
+					);
+			}
 		}
 		
 		/**
@@ -174,6 +203,19 @@ package as3.hv.core.console
 				
 			if( maxH > 0 )
 				this.maxHeight = maxH;
+				
+			if( this.isResizeable )
+			{
+				this.resizeHandle.addEventListener(
+						MouseEvent.MOUSE_DOWN,
+						startViewResize
+					);
+			} else if ( this.resizeHandle != null ) {
+				this.resizeHandle.removeEventListener(
+						MouseEvent.MOUSE_DOWN,
+						startViewResize
+					);
+			}
 		}
 		
 		/**
@@ -196,8 +238,12 @@ package as3.hv.core.console
 						MouseEvent.MOUSE_DOWN,
 						startViewDrag
 					);
+			} else if ( this.dragHandle != null ) {
+				this.dragHandle.removeEventListener(
+						MouseEvent.MOUSE_DOWN,
+						startViewDrag
+					);
 			}
-				
 		}
 		
 		// =====================================================================
@@ -229,7 +275,7 @@ package as3.hv.core.console
 		protected function removedFromStage(e:Event):void
 		{
 			//dealloc
-			while(	this.numChildren > 0	)
+			while( this.numChildren > 0 )
 				this.removeChildAt(0);
 			
 			if( dragHandle != null )
@@ -243,7 +289,6 @@ package as3.hv.core.console
 			this.dragHandle = null;
 		}
 		
-		
 		/**
 		 * ---------------------------------------------------------------------
 		 * startViewDrag Event
@@ -251,10 +296,7 @@ package as3.hv.core.console
 		 */
 		protected function startViewDrag(e:MouseEvent):void 
 		{
-			this.startDrag(
-					false,
-					new Rectangle(0,0,this.stage.stageWidth,this.stage.stageHeight)
-				);
+			this.startDrag(false);
 			
 			stage.addEventListener(
 					MouseEvent.MOUSE_UP,
@@ -271,44 +313,82 @@ package as3.hv.core.console
 		{
 			this.stopDrag();
 		}
-					
 		
-//TODO
-/*
-		public function resizeTest(evt:MouseEvent):void
+		/**
+		 * ---------------------------------------------------------------------
+		 * startViewResize Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function startViewResize(e:MouseEvent):void 
 		{
+			this.resizeHandle.startDrag(
+					false,
+					new Rectangle(
+							minWidth,
+							minHeight,
+							maxWidth,
+							maxHeight
+						)
+				);
 			
-			this.removeEventListener(MouseEvent.MOUSE_DOWN, resizeTest);
+			stage.addEventListener(
+					MouseEvent.MOUSE_UP,
+					stopViewResize
+				);
 			
-			this.addEventListener(MouseEvent.MOUSE_MOVE, mouseMoving);
-			this.addEventListener(MouseEvent.MOUSE_UP, stopResizeTest);
-			
+			stage.addEventListener(
+					MouseEvent.MOUSE_MOVE, 
+					resizing
+				);
 		}
 		
-		public function stopResizeTest(evt:MouseEvent):void
+		/**
+		 * ---------------------------------------------------------------------
+		 * stopViewResize Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function stopViewResize(e:MouseEvent):void 
 		{
+			this.resizeHandle.stopDrag();
 			
-			this.addEventListener(MouseEvent.MOUSE_DOWN, resizeTest);
+			stage.removeEventListener(
+					MouseEvent.MOUSE_UP,
+					stopViewResize
+				);
 			
-			this.removeEventListener(MouseEvent.MOUSE_MOVE, mouseMoving);
-			this.removeEventListener(MouseEvent.MOUSE_UP, stopResizeTest);
-			
+			stage.removeEventListener(
+					MouseEvent.MOUSE_MOVE, 
+					resizing
+				);
+			resizing(null);
 		}
 		
-		
-		public function resize(evt:MouseEvent):void
+		/**
+		 * ---------------------------------------------------------------------
+		 * resizing Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function resizing(e:MouseEvent):void
 		{
-			//trace( " x: "+x + " mouseX: "+  this.parent.mouseX );
-			
-			this.currentWidth =   this.parent.mouseX - this.x ;
-			this.currentHeight =  this.parent.mouseY - this.y;
-			
+			this.currentWidth = this.resizeHandle.x;
+			this.currentHeight = this.resizeHandle.y;
 			this.layout();
 		}
-*/		
 		
-		
-		
+		/**
+		 * ---------------------------------------------------------------------
+		 * toggleViewState Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function toggleViewState(e:MouseEvent):void
+		{
+			if( this.viewState == VIEW_STATE_MAXIMIZED )
+				this.viewState = VIEW_STATE_MINIMIZED;
+			else if( this.viewState == VIEW_STATE_MINIMIZED )
+				this.viewState = VIEW_STATE_MAXIMIZED;
+			
+			layout();
+		}
 		
 	}
 }
