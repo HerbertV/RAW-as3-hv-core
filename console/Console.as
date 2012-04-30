@@ -20,6 +20,7 @@
  */
 package as3.hv.core.console
 {
+	import flash.geom.Rectangle;
 	import flash.display.Sprite;
 	import flash.display.Shape;
 	
@@ -39,7 +40,6 @@ package as3.hv.core.console
 	import as3.hv.core.shapes.EdgedRectangle;
 	import as3.hv.core.console.cmd.*;
 	
-
 	// =========================================================================
 	// Class Console
 	// =========================================================================
@@ -67,8 +67,6 @@ package as3.hv.core.console
 		public static const CMDLINE_MARGIN_X = 10;
 		public static const CMDLINE_MARGIN_Y = 3;
 		public static const CMDLINE_HEIGHT = 20;
-		
-		public static const CMD_PROMPT = ">";
 		
 		public static const COLOR_COMMAND:String = "#555555";
 		public static const COLOR_INFO:String = "#009900";
@@ -99,6 +97,8 @@ package as3.hv.core.console
 		private var txtOutput:TextField;
 		// background shape
 		private var bgOutput:Shape;
+		//scrollbar.
+		private var sbOutput:Sprite;
 		
 		// for user input
 		private var cmdLine:TextField;
@@ -110,6 +110,13 @@ package as3.hv.core.console
 		private var arrCommandKeys:Array = new Array();
 		
 		private var doAutoScroll:Boolean = true;
+		
+		private var toggleKey:uint = 220; //^
+		
+		// command stack for storing the last commands
+		private var arrCmdStack:Array = new Array();
+		private var cmdStackIdx:int = -1;
+		private var cmdStackSize:int = 10;
 		
 		
 		// =====================================================================
@@ -129,11 +136,11 @@ package as3.hv.core.console
 			if ( myInstance ) 
 				throw new Error ("Console is a singleton class, use getInstance() instead");    
 			
-//this.visible = false;
+			this.visible = false;
 			
 			this.txtHeadline = new TextField();
 			var hdformat:TextFormat = new TextFormat();
-            hdformat.font = "Arial";
+			hdformat.font = "Arial";
 			hdformat.color = 0x000000;
 			hdformat.size = 10;
 			hdformat.bold = true;
@@ -153,14 +160,16 @@ package as3.hv.core.console
 			txtOutput.selectable = true;
 			
 			var format:TextFormat = new TextFormat();
-            format.font = "Arial";
-            format.color = 0xFFFFFF;
-            format.size = 10;
+			format.font = "Arial";
+			format.color = 0xFFFFFF;
+			format.size = 10;
 			txtOutput.defaultTextFormat = format;
 			
+			//now register the core commands
 			this.registerCommand( CmdHelp.CMD, new CmdHelp() );
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
+			
 			
 			clearOutput();
 		}
@@ -191,7 +200,6 @@ package as3.hv.core.console
 		override protected function layout():void
 		{
 			super.layout();
-			
 			bgHeadline.graphics.clear();
 			EdgedRectangle.drawGraphics(
 					bgHeadline.graphics,
@@ -209,6 +217,12 @@ package as3.hv.core.console
 				);
 			this.txtHeadline.width = currentWidth - 20;
 			
+			this.dragHandle.graphics.clear();
+			this.dragHandle.graphics.lineStyle();
+			this.dragHandle.graphics.beginFill(0xFF0000,0.0);
+			this.dragHandle.graphics.drawRect(1,1,currentWidth-2,25);
+			this.dragHandle.graphics.endFill();
+						
 			// output
 			bgOutput.graphics.clear();
 			EdgedRectangle.drawGraphics(
@@ -298,15 +312,31 @@ package as3.hv.core.console
 		
 		/**
 		 * ---------------------------------------------------------------------
+		 * setToggleKey
+		 * ---------------------------------------------------------------------
+		 * for changing the visibility toggle key.
+		 * Default key is ^ 
+		 *
+		 * @param key 		key as uint from Keyboard class e.g. Keyboard.F1
+		 *					or a keycode uint
+		 */
+		public function setToggleKey(key:uint):void
+		{
+			this.toggleKey = key;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
 		 * doCommand
 		 * ---------------------------------------------------------------------
-		 * execute command 
+		 * looks through the command list and calls the IConsoleCommands
+		 * doCommand function if the command was found.
+		 * Error handling on wrong arguments is done in the command class itself.
 		 * 
 		 * @param cmdstring		commandstring with arguments
 		 */
 		public function doCommand(cmdstring:String) 
-		{			
-			cmdstring = StringHelper.trim(cmdstring," ");
+		{	
 			var arrCmd:Array = cmdstring.split(" ");
 			var cmdKey:String = "";
 			var cmdIdx:int = -1;
@@ -361,6 +391,7 @@ package as3.hv.core.console
 		 * registerCommand
 		 * ---------------------------------------------------------------------
 		 * register a command to the available command list.
+		 * if you register a existing key, the old command is overridden. 
 		 * 
 		 * @param key		command string
 		 * @param cmd 		command class 
@@ -370,8 +401,17 @@ package as3.hv.core.console
 				cmd:IConsoleCommand
 			)
 		{
-			this.arrCommandKeys.push(key);
-			this.arrCommands.push(cmd);
+			var idx:int = this.arrCommandKeys.indexOf(key);
+			
+			if( idx == -1 )
+			{
+				// add new
+				this.arrCommandKeys.push(key);
+				this.arrCommands.push(cmd);
+				return;
+			}
+			// override
+			this.arrCommands[idx] = cmd;
 		}
 		
 		/**
@@ -383,6 +423,8 @@ package as3.hv.core.console
 		{
 			this.txtOutput.htmlText = this.txtOutput.htmlText 
 					+ "<font size='5'><br/></font>";
+			this.updateScrollbar();
+			
 		}
 		
 		/**
@@ -401,6 +443,8 @@ package as3.hv.core.console
 //this.writeToConsole(" "+this.getMyConfigString(),DebugConsole.TYPE_INPUT);
 
 			this.newLine();
+			this.updateScrollbar();
+			
 		}
 		
 		/**
@@ -421,7 +465,7 @@ package as3.hv.core.console
 			if( doCheck && !DebugLevel.check(level) )
 				return;
 						
-			var formatedMsg = "<font size='";
+			var formatedMsg = "<font face='Arial' size='";
 			
 			switch( level )
 			{
@@ -474,8 +518,9 @@ package as3.hv.core.console
 			this.txtOutput.htmlText = this.txtOutput.htmlText +  formatedMsg;
 			if( this.doAutoScroll )
 				this.txtOutput.scrollV = this.txtOutput.numLines;
-
-// TODO update scrollbar
+			
+			this.updateScrollbar();
+			
 
 // TODO show and expand console if fatalerror
 /*
@@ -483,6 +528,56 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 	this.switchConsole();
 }
 */
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * updateScrollbar
+		 * ---------------------------------------------------------------------
+		 * updates the scrollbar for our output
+		 */
+		private function updateScrollbar(needsResize:Boolean=true):void
+		{
+			if( sbOutput == null )
+				return;
+			
+			if( txtOutput.maxScrollV == 1 )
+			{
+				sbOutput.visible = false;
+				return;
+			}
+			
+			sbOutput.visible = true;
+			var h:Number = txtOutput.height;
+			
+			if( txtOutput.maxScrollV > 1 )
+			{
+				// since there is no function to get max visible lines
+				var visibleLines:int = txtOutput.numLines - txtOutput.maxScrollV;
+				h = h * visibleLines / txtOutput.numLines;
+			}
+			
+			if( h < 30 )
+				h = 30;
+						
+			var percent:Number = txtOutput.scrollV / txtOutput.maxScrollV;
+			
+			sbOutput.x = currentWidth - CMDLINE_MARGIN_X + 1;
+			sbOutput.y = txtOutput.y + (percent * (txtOutput.height - h));
+			
+			if( !needsResize )
+				return;
+						
+			sbOutput.graphics.clear();
+			sbOutput.graphics.lineStyle(0,0x000000);
+			sbOutput.graphics.beginFill(0x0066FF);
+			sbOutput.graphics.drawRect(
+					0,
+					0,
+					6,
+					h
+				);
+			sbOutput.graphics.endFill();	
 		}
 		
 		// =====================================================================
@@ -505,11 +600,29 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			this.bgHeadline = new Sprite();
 			this.addChild(this.bgHeadline);
 			this.addChild(this.txtHeadline);
-						
+			
+			this.dragHandle = new Sprite();
+			this.addChild(this.dragHandle);
+			this.setupDragging(true);
+			
 			// output
 			this.bgOutput = new Shape();
 			this.addChild(bgOutput);
 			this.addChild(txtOutput)
+			this.txtOutput.addEventListener(
+					MouseEvent.MOUSE_WHEEL,
+					doScrollWheel
+				);
+			this.sbOutput = new Sprite();
+			this.addChild(sbOutput)
+			this.sbOutput.addEventListener(
+					MouseEvent.MOUSE_DOWN,
+					startScroll
+				);
+			stage.addEventListener(
+					MouseEvent.MOUSE_UP,
+					stopScroll
+				);
 			
 			// Commandline
 			this.bgCmdLine = new Shape();
@@ -517,7 +630,7 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			
 			this.cmdLine = new TextField();
 			var cmdformat:TextFormat = new TextFormat();
-            cmdformat.font = "Arial";
+			cmdformat.font = "Arial";
 			cmdformat.color = 0x000000;
 			cmdformat.size = 10;
 			this.cmdLine.defaultTextFormat = cmdformat;
@@ -525,6 +638,13 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			this.addChild(this.cmdLine);
 			
 			this.layout();
+			this.updateScrollbar();
+			
+			stage.addEventListener(
+					KeyboardEvent.KEY_UP,
+					toggleConsole
+				);
+			
 		}
 		
 		/**
@@ -539,8 +659,26 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 			//dealloc
 			super.removedFromStage(e);
 			
+			this.sbOutput.removeEventListener(
+					MouseEvent.MOUSE_DOWN,
+					startScroll
+				);
+			stage.removeEventListener(
+					MouseEvent.MOUSE_UP,
+					stopScroll
+				);
+			this.txtOutput.removeEventListener(
+					MouseEvent.MOUSE_WHEEL,
+					doScrollWheel
+				);
+			stage.removeEventListener(
+					KeyboardEvent.KEY_UP,
+					toggleConsole
+				);
+			
 			this.bgHeadline = null;
 			this.bgOutput = null;
+			this.sbOutput = null;
 			this.bgCmdLine = null;
 			this.cmdLine = null;
 		
@@ -548,22 +686,155 @@ if (type == DebugLevel.FATAL_ERROR && this.isConsoleOpen == false) {
 		
 		/**
 		 * ---------------------------------------------------------------------
-		 * keyUpHandler
+		 * keyUpHandler Event
 		 * ---------------------------------------------------------------------
-		 *
+		 * key handling for our command line
+		 * 
 		 * @param e 		KeyboardEvent
 		 */
 		private function keyUpHandler(e:KeyboardEvent):void 
 		{
+			// complete comand
+			if( e.keyCode == Keyboard.TAB )
+			{
+				//TODO				
+			}
 			
-// TODO add tab and arrow keys
-
-            if (e.keyCode == Keyboard.ENTER)
-   			{
-         		this.doCommand(this.cmdLine.text);
-				this.cmdLine.text ="";
-    		}
+			//UpArrow = 38
+			if( e.keyCode == Keyboard.UP 
+					&& arrCmdStack.length > 0)
+			{
+				cmdStackIdx--;
+				
+				if( cmdStackIdx < 0 )
+					cmdStackIdx = arrCmdStack.length-1;
+				
+				this.cmdLine.text = arrCmdStack[cmdStackIdx];
+				this.cmdLine.setSelection(
+						this.cmdLine.text.length, 
+						this.cmdLine.text.length
+					)
+				return;
+			}
+			
+			//DownArrow = 40
+			if( e.keyCode == Keyboard.DOWN 
+					&& arrCmdStack.length > 0 )
+			{
+				cmdStackIdx++;
+				if( cmdStackIdx > arrCmdStack.length-1 )
+					cmdStackIdx = 0;
+					
+				this.cmdLine.text = arrCmdStack[cmdStackIdx];
+				this.cmdLine.setSelection(
+						this.cmdLine.text.length, 
+						this.cmdLine.text.length
+					)
+				return;
+			}
+				
+			if( e.keyCode == Keyboard.ENTER )
+			{
+				// clean command
+				var cmd:String = StringHelper.trim(this.cmdLine.text," ");
+				
+				// update stack
+				arrCmdStack.push(cmd);
+				cmdStackIdx = -1;
+				if( arrCmdStack.length > cmdStackSize )
+					arrCmdStack.shift();
+				
+				// fire command
+				this.doCommand( cmd );
+				this.cmdLine.text = "";
+			}
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * toggleConsole Event
+		 * ---------------------------------------------------------------------
+		 * toggles the consoles visiblity by hitting the toggle key.
+		 
+		 * @param e 		KeyboardEvent
+		 */
+		private function toggleConsole(e:KeyboardEvent):void 
+		{
+			if (e.keyCode == this.toggleKey)
+				this.visible = !this.visible;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * startScroll Event
+		 * ---------------------------------------------------------------------
+		 * scrollbar -> textfield
+		 *
+		 * @param e 		MouseEvent
+		 */
+		private function startScroll(e:MouseEvent):void
+		{
+			sbOutput.startDrag(
+					false,
+					new Rectangle(
+							currentWidth - CMDLINE_MARGIN_X + 1,
+							txtOutput.y,
+							0,
+							txtOutput.height - sbOutput.height
+						)
+				);
+			sbOutput.addEventListener(
+					Event.ENTER_FRAME,
+					doScroll
+				);
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * stopScroll Event
+		 * ---------------------------------------------------------------------
+		 * scrollbar -> textfield
+		 *
+		 * @param e 		MouseEvent
+		 */
+		private function stopScroll(e:MouseEvent):void
+		{
+			sbOutput.stopDrag();
+			sbOutput.removeEventListener(
+					Event.ENTER_FRAME,
+					doScroll
+				);
+			
+			// finally call doScroll to make the last update
+			doScroll(null);
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * doScroll Event
+		 * ---------------------------------------------------------------------
+		 * scrollbar -> textfield
+		 *
+		 * @param e 		MouseEvent
+		 */
+		private function doScroll(e:Event):void
+		{
+			var interval:Number = txtOutput.height - sbOutput.height;
+			var percent:Number = ((sbOutput.y - txtOutput.y) / interval );
+			txtOutput.scrollV = percent * txtOutput.maxScrollV;
+		}
+	
+		/**
+		 * ---------------------------------------------------------------------
+		 * doScrollWheel
+		 * ---------------------------------------------------------------------
+		 * textfield -> scrollbar. if you use the mousewheel above the textfield.
+		 *
+		 * @param e 		MouseEvent
+		 */
+		private function doScrollWheel(e:MouseEvent):void
+		{
+			updateScrollbar(false);
+		}
 	}
 }

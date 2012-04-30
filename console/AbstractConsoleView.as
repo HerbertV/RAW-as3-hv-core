@@ -189,6 +189,15 @@ package as3.hv.core.console
 			):void
 		{
 			this.isDragable = dragable;
+			
+			if( this.isDragable )
+			{
+				this.dragHandle.addEventListener(
+						MouseEvent.MOUSE_DOWN,
+						startViewDrag
+					);
+			}
+				
 		}
 		
 		// =====================================================================
@@ -223,11 +232,46 @@ package as3.hv.core.console
 			while(	this.numChildren > 0	)
 				this.removeChildAt(0);
 			
+			if( dragHandle != null )
+				this.dragHandle.removeEventListener(
+						MouseEvent.MOUSE_DOWN,
+						startViewDrag
+					);
+			
 			this.bgShape = null;
 			this.resizeHandle = null;
 			this.dragHandle = null;
 		}
 		
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * startViewDrag Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function startViewDrag(e:MouseEvent):void 
+		{
+			this.startDrag(
+					false,
+					new Rectangle(0,0,this.stage.stageWidth,this.stage.stageHeight)
+				);
+			
+			stage.addEventListener(
+					MouseEvent.MOUSE_UP,
+					stopViewDrag
+				);
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * startViewDrag Event
+		 * ---------------------------------------------------------------------
+		 */
+		protected function stopViewDrag(e:MouseEvent):void 
+		{
+			this.stopDrag();
+		}
+					
 		
 //TODO
 /*
