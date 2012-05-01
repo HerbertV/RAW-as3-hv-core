@@ -68,9 +68,9 @@ package as3.hv.core.console
 		// Class version
 		public static const VERSION:String = "2.0.0";
 		
-		public static const CMDLINE_MARGIN_X = 10;
-		public static const CMDLINE_MARGIN_Y = 3;
-		public static const CMDLINE_HEIGHT = 20;
+		public static const CMDLINE_MARGIN_X:Number = 10;
+		public static const CMDLINE_MARGIN_Y:Number = 3;
+		public static const CMDLINE_HEIGHT:Number = 20;
 		
 		public static const COLOR_COMMAND:String = "#555555";
 		public static const COLOR_INFO:String = "#009900";
@@ -175,7 +175,9 @@ package as3.hv.core.console
 			this.registerCommand( CmdHelp.CMD, new CmdHelp() );
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
+			this.registerCommand( CmdExit.CMD, new CmdExit() );
 			this.registerCommand( CmdSystem.CMD, new CmdSystem() );
+			this.registerCommand( CmdTime.CMD, new CmdTime() );
 			
 			clearOutput();
 		}
