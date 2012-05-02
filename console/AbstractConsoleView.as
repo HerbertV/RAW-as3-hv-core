@@ -80,7 +80,7 @@ package as3.hv.core.console
 		// shape for drawing a background
 		protected var bgShape:Shape;
 		
-		protected var btnViewMinMax:Sprite;
+		protected var btnViewMinMax:UIButtonMinMax;
 		
 		
 		// =====================================================================
@@ -143,11 +143,11 @@ package as3.hv.core.console
 						currentHeight,
 						new Array(10,5),
 						2,
-						0x000000,
-						0.9,
+						UIStyles.FRAME_BG_OUTLINE_COLOR,
+						UIStyles.FRAME_BG_OUTLINE_ALPHA,
 						true,
-						0xCCCCDD,
-						0.7
+						UIStyles.FRAME_BG_COLOR,
+						UIStyles.FRAME_BG_ALPHA
 					);
 				return;
 			}
@@ -164,11 +164,11 @@ package as3.hv.core.console
 						minimizedHeight,
 						new Array(10,5),
 						2,
-						0x000000,
-						0.9,
+						UIStyles.FRAME_BG_OUTLINE_COLOR,
+						UIStyles.FRAME_BG_OUTLINE_ALPHA,
 						true,
-						0xCCCCDD,
-						0.7
+						UIStyles.FRAME_BG_COLOR,
+						UIStyles.FRAME_BG_ALPHA
 					);
 			}
 		}
@@ -206,6 +206,8 @@ package as3.hv.core.console
 				
 			if( this.isResizeable )
 			{
+				this.resizeHandle.buttonMode = true;
+				this.resizeHandle.useHandCursor = true;
 				this.resizeHandle.addEventListener(
 						MouseEvent.MOUSE_DOWN,
 						startViewResize
@@ -234,6 +236,8 @@ package as3.hv.core.console
 			
 			if( this.isDragable )
 			{
+				this.dragHandle.buttonMode = true;
+				this.dragHandle.useHandCursor = true;
 				this.dragHandle.addEventListener(
 						MouseEvent.MOUSE_DOWN,
 						startViewDrag
@@ -244,6 +248,23 @@ package as3.hv.core.console
 						startViewDrag
 					);
 			}
+		}
+		
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * bringToFront
+		 * ---------------------------------------------------------------------
+		 * Helper for stay on top (z-order) handling
+		 */
+		public function bringToFront()
+		{
+			if( this.parent != null )
+				this.parent.setChildIndex(
+						this, 
+						this.parent.numChildren-1
+					);	
+			
 		}
 		
 		// =====================================================================
@@ -260,11 +281,13 @@ package as3.hv.core.console
 			//init
 			this.bgShape = new Shape();
 			this.addChild(bgShape);
-			
+						
 			// to prevent layout called more than once if 
 			// you override this function.
 			if( e != null )
 				this.layout();
+				
+			bringToFront();
 		}
 		
 		/**
@@ -296,6 +319,8 @@ package as3.hv.core.console
 		 */
 		protected function startViewDrag(e:MouseEvent):void 
 		{
+			bringToFront();
+			
 			this.startDrag(false);
 			
 			stage.addEventListener(
@@ -321,6 +346,8 @@ package as3.hv.core.console
 		 */
 		protected function startViewResize(e:MouseEvent):void 
 		{
+			bringToFront();
+			
 			this.resizeHandle.startDrag(
 					false,
 					new Rectangle(
@@ -387,6 +414,7 @@ package as3.hv.core.console
 			else if( this.viewState == VIEW_STATE_MINIMIZED )
 				this.viewState = VIEW_STATE_MAXIMIZED;
 			
+			bringToFront();
 			layout();
 		}
 		

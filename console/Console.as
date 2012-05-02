@@ -21,7 +21,6 @@
 package as3.hv.core.console
 {
 	import flash.geom.Rectangle;
-	import flash.geom.Point;
 	
 	import flash.display.Sprite;
 	import flash.display.Shape;
@@ -37,10 +36,7 @@ package as3.hv.core.console
 	import flash.ui.Keyboard;
 	
 	import as3.hv.core.utils.StringHelper;
-	
 	import as3.hv.core.shapes.EdgedRectangle;
-	import as3.hv.core.shapes.PenroseTriangle;
-	
 	import as3.hv.core.console.cmd.*;
 	
 	
@@ -69,21 +65,8 @@ package as3.hv.core.console
 		public static const VERSION:String = "2.0.0";
 		
 		public static const CMDLINE_MARGIN_X:Number = 10;
-		public static const CMDLINE_MARGIN_Y:Number = 3;
+		public static const CMDLINE_MARGIN_Y:Number = 4;
 		public static const CMDLINE_HEIGHT:Number = 20;
-		
-		public static const COLOR_COMMAND:String = "#555555";
-		public static const COLOR_INFO:String = "#009900";
-		public static const COLOR_DEBUG:String = "#000000";
-		public static const COLOR_WARNING:String = "#FFFF00";
-		public static const COLOR_ERROR:String = "#FF0000";
-		
-		public static const FONTSIZE_COMMAND:String = "10";
-		public static const FONTSIZE_INFO:String = "10";
-		public static const FONTSIZE_DEBUG:String = "10";
-		public static const FONTSIZE_WARNING:String = "12";
-		public static const FONTSIZE_ERROR:String = "13";
-		
 		
 		// =====================================================================
 		// Variables
@@ -92,10 +75,8 @@ package as3.hv.core.console
 		// static singleton instance 
 		private static var myInstance:Console = new Console();
 		
-		// headline label
-		private var txtHeadline:TextField;
-		// bg shape also used as drag handle
-		private var bgHeadline:Sprite;
+		// headline
+		private var headline:UIHeadline;
 		
 		// for all output messages
 		private var txtOutput:TextField;
@@ -144,18 +125,11 @@ package as3.hv.core.console
 			
 			this.visible = false;
 			
-			this.txtHeadline = new TextField();
-			var hdformat:TextFormat = new TextFormat();
-			hdformat.font = "Arial";
-			hdformat.color = 0x000000;
-			hdformat.size = 10;
-			hdformat.bold = true;
-			this.txtHeadline.defaultTextFormat = hdformat;
-			this.txtHeadline.text = "CONSOLE -- Version "+VERSION;
-			this.txtHeadline.x = 35;
-			this.txtHeadline.y = 5;
-			this.txtHeadline.height = 20;
-			this.txtHeadline.selectable = false;
+			this.headline = new UIHeadline(
+					400,
+					25,
+					"CONSOLE -- Version "+VERSION
+				);
 			
 			// Output Area
 			// init the output area immediately since there we can start logging
@@ -166,9 +140,9 @@ package as3.hv.core.console
 			txtOutput.selectable = true;
 			
 			var format:TextFormat = new TextFormat();
-			format.font = "Arial";
+			format.font = UIStyles.MSG_FONT_NAME;
 			format.color = 0xFFFFFF;
-			format.size = 10;
+			format.size = UIStyles.MSG_FONT_SIZE;
 			txtOutput.defaultTextFormat = format;
 			
 			//now register the core commands
@@ -176,6 +150,7 @@ package as3.hv.core.console
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
 			this.registerCommand( CmdExit.CMD, new CmdExit() );
+			// TODO this.registerCommand( CmdFps.CMD, new CmdFps() );
 			this.registerCommand( CmdSystem.CMD, new CmdSystem() );
 			this.registerCommand( CmdTime.CMD, new CmdTime() );
 			
@@ -211,14 +186,17 @@ package as3.hv.core.console
 			
 			if( viewState == VIEW_STATE_MINIMIZED )
 			{
-				bgHeadline.graphics.clear();
-				bgHeadline.visible = false;
-				this.txtHeadline.visible = false;
+				this.headline.visible = false;
 				
 				this.dragHandle.graphics.clear();
 				this.dragHandle.graphics.lineStyle();
 				this.dragHandle.graphics.beginFill(0xFF0000,0.0);
-				this.dragHandle.graphics.drawRect(1,1,minimizedWidth-2,minimizedHeight);
+				this.dragHandle.graphics.drawRect(
+						1,
+						1,
+						minimizedWidth-2,
+						minimizedHeight
+					);
 				this.dragHandle.graphics.endFill();
 							
 				// output
@@ -238,24 +216,8 @@ package as3.hv.core.console
 			
 			if( viewState == VIEW_STATE_MAXIMIZED )
 			{
-				bgHeadline.graphics.clear();
-				bgHeadline.visible = true;
-				EdgedRectangle.drawGraphics(
-						bgHeadline.graphics,
-						1,
-						1,
-						currentWidth-2,
-						25,
-						new Array(10,5,3,-1),
-						1,
-						0x000000,
-						1.0,
-						true,
-						0xCCCCDD,
-						0.8
-					);
-				this.txtHeadline.width = currentWidth - (this.txtHeadline.x+2);
-				this.txtHeadline.visible = true;
+				this.headline.visible = true;
+				this.headline.layout(currentWidth,25);
 				
 				this.dragHandle.visible = true;
 				this.dragHandle.graphics.clear();
@@ -275,11 +237,11 @@ package as3.hv.core.console
 						currentHeight-60,
 						new Array(5,3),
 						1,
-						0x000000,
-						1.0,
+						UIStyles.OUTPUT_BG_OUTLINE_COLOR,
+						UIStyles.OUTPUT_BG_OUTLINE_ALPHA,
 						true,
-						0xCCCCDD,
-						0.8
+						UIStyles.OUTPUT_BG_COLOR,
+						UIStyles.OUTPUT_BG_ALPHA
 					);
 				
 				txtOutput.visible = true;
@@ -299,11 +261,11 @@ package as3.hv.core.console
 						23,
 						new Array(5,3),
 						1,
-						0x000000,
-						1.0,
+						UIStyles.CMD_BG_OUTLINE_COLOR,
+						UIStyles.CMD_BG_OUTLINE_ALPHA,
 						true,
-						0xCCCCDD,
-						0.8
+						UIStyles.CMD_BG_COLOR, 
+						UIStyles.CMD_BG_ALPHA
 					);
 				
 				this.cmdLine.visible = true;
@@ -311,7 +273,6 @@ package as3.hv.core.console
 				this.cmdLine.height = CMDLINE_HEIGHT;
 				this.cmdLine.x = CMDLINE_MARGIN_X;
 				this.cmdLine.y = currentHeight - CMDLINE_MARGIN_Y - CMDLINE_HEIGHT;
-				this.cmdLine.text = cmdDefault;
 				this.cmdLine.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
 				
 				this.resizeHandle.visible = true;
@@ -329,7 +290,7 @@ package as3.hv.core.console
 		 */
 		public function setHeadline(txt:String):void
 		{
-			this.txtHeadline.text = txt;
+			this.headline.setLabel(txt);
 		}
 		
 		
@@ -401,7 +362,8 @@ package as3.hv.core.console
 					{
 						this.writeln(
 								"CMD: "+cmdstring,
-								DebugLevel.COMMAND
+								DebugLevel.DEBUG,
+								false
 							);
 						
 						cmd = IConsoleCommand(this.arrCommands[cmdIdx]);
@@ -470,7 +432,7 @@ package as3.hv.core.console
 		public function newLine()
 		{
 			this.txtOutput.htmlText = this.txtOutput.htmlText 
-					+ "<font size='5'><br/></font>";
+					+ "<font size='5'><br></font>";
 			if( this.visible 
 					&& this.viewState == VIEW_STATE_MAXIMIZED )
 				this.updateScrollbar();
@@ -485,7 +447,11 @@ package as3.hv.core.console
 		{
 			this.txtOutput.htmlText = "";
 			
-			this.writeln(" &gt; &gt; CONSOLE READY &lt; &lt;",DebugLevel.INFO,false);
+			this.writeln(
+					"<b> &gt; &gt; CONSOLE READY &lt; &lt; </b>",
+					DebugLevel.INFO,
+					false
+				);
 			this.newLine();
 			
 			if( this.visible 
@@ -511,57 +477,53 @@ package as3.hv.core.console
 			if( doCheck && !DebugLevel.check(level) )
 				return;
 						
-			var formatedMsg = "<font face='Arial' size='";
+			var formatedMsg = "<font face='" 
+					+ UIStyles.MSG_FONT_NAME 
+					+ "' size='" + UIStyles.MSG_FONT_SIZE 
+					+ "' color='";
 			
 			switch( level )
 			{
 				case DebugLevel.FATAL_ERROR:
-					formatedMsg += FONTSIZE_ERROR 
-							+ "' color='" + COLOR_ERROR 
-							+ "'><b> &gt; &gt; !!FATAL ERROR!! &lt; &lt; </b><br/>" 
+					formatedMsg += UIStyles.MSG_COLOR_ERROR 
+							+ "'><b> &gt; &gt; !!FATAL ERROR!! &lt; &lt; </b><br>" 
 							+ msg + "</font>";
 					break;
 				
 				case DebugLevel.ERROR:
-					formatedMsg += FONTSIZE_ERROR
-							+ "' color='" + COLOR_ERROR 
-							+ "'><b> &gt; &gt; !ERROR! &lt; &lt; </b><br/>"
+					formatedMsg += UIStyles.MSG_COLOR_ERROR 
+							+ "'><b> &gt; &gt; !ERROR! &lt; &lt; </b><br>"
 							+ msg + "</font>";
 					break;
 					
 				case DebugLevel.WARNING:
-					formatedMsg += FONTSIZE_WARNING
-							+ "' color='" + COLOR_WARNING
-							+ "'><b> &gt; &gt; WARNING &lt; &lt; </b><br/>"
+					formatedMsg += UIStyles.MSG_COLOR_WARNING
+							+ "'><b> &gt; &gt; WARNING &lt; &lt; </b><br>"
 							+ msg + "</font>";
 					break;
 					
 				case DebugLevel.DEBUG:
-					formatedMsg += FONTSIZE_DEBUG 
-							+ "' color='" + COLOR_DEBUG + "'>" 
+					formatedMsg += UIStyles.MSG_COLOR_DEBUG + "'>" 
 							+ msg + "</font>";
 					break;
 				
 				case DebugLevel.INFO:
-					formatedMsg += FONTSIZE_INFO 
-							+ "' color='" + COLOR_INFO + "'>" 
+					formatedMsg += UIStyles.MSG_COLOR_INFO + "'>" 
 							+ msg + "</font>";
 					break;
 				
 				case DebugLevel.COMMAND:
-					formatedMsg += FONTSIZE_COMMAND
-							+ "' color='" + COLOR_COMMAND + "'>" 
+					formatedMsg += UIStyles.MSG_COLOR_COMMAND + "'>" 
 							+ msg + "</font>";
 					break;
 				
 				case DebugLevel.COMMAND_ERROR:
-					formatedMsg += FONTSIZE_COMMAND
-							+ "' color='" + COLOR_ERROR + "'>" 
+					formatedMsg += UIStyles.MSG_COLOR_ERROR + "'>" 
 							+ msg + "</font>";
 					break;
 			}
 			
-			this.txtOutput.htmlText = this.txtOutput.htmlText +  formatedMsg;
+			this.txtOutput.htmlText = this.txtOutput.htmlText + formatedMsg;
 			if( this.doAutoScroll )
 				this.txtOutput.scrollV = this.txtOutput.numLines;
 			
@@ -613,8 +575,8 @@ package as3.hv.core.console
 				return;
 						
 			sbOutput.graphics.clear();
-			sbOutput.graphics.lineStyle(0,0x000000);
-			sbOutput.graphics.beginFill(0x0066FF);
+			sbOutput.graphics.lineStyle(0,UIStyles.UI_OUTLINE_COLOR);
+			sbOutput.graphics.beginFill(UIStyles.UI_COLOR);
 			sbOutput.graphics.drawRect(
 					0,
 					0,
@@ -641,9 +603,7 @@ package as3.hv.core.console
 			super.addedToStage(null);
 			
 			// headline
-			this.bgHeadline = new Sprite();
-			this.addChild(this.bgHeadline);
-			this.addChild(this.txtHeadline);
+			this.addChild(this.headline);
 			
 			this.dragHandle = new Sprite();
 			this.addChild(this.dragHandle);
@@ -658,6 +618,8 @@ package as3.hv.core.console
 					doScrollWheel
 				);
 			this.sbOutput = new Sprite();
+			this.sbOutput.buttonMode = true;
+			this.sbOutput.useHandCursor = true;
 			this.addChild(sbOutput)
 			this.sbOutput.addEventListener(
 					MouseEvent.MOUSE_DOWN,
@@ -674,17 +636,18 @@ package as3.hv.core.console
 			
 			this.cmdLine = new TextField();
 			var cmdformat:TextFormat = new TextFormat();
-			cmdformat.font = "Arial";
-			cmdformat.color = 0x000000;
-			cmdformat.size = 10;
+			cmdformat.font = UIStyles.CMD_FONT_NAME;
+			cmdformat.color = UIStyles.CMD_FONT_COLOR;
+			cmdformat.size = UIStyles.CMD_FONT_SIZE;
 			this.cmdLine.defaultTextFormat = cmdformat;
 			this.cmdLine.type = TextFieldType.INPUT;
 			this.addChild(this.cmdLine);
+			this.cmdLine.text = cmdDefault;
 			
 			this.resizeHandle = new Sprite();
 			this.addChild(this.resizeHandle);
-			this.resizeHandle.graphics.lineStyle(0,0x000000);
-			this.resizeHandle.graphics.beginFill(0x0066FF);
+			this.resizeHandle.graphics.lineStyle(0,UIStyles.UI_OUTLINE_COLOR);
+			this.resizeHandle.graphics.beginFill(UIStyles.UI_COLOR);
 			this.resizeHandle.graphics.moveTo(0,-10);
 			this.resizeHandle.graphics.lineTo(4,-10);
 			this.resizeHandle.graphics.lineTo(4,0);
@@ -705,19 +668,7 @@ package as3.hv.core.console
 				);
 			
 			// min max button
-			this.btnViewMinMax = new Sprite();
-			PenroseTriangle.drawGraphics(
-					this.btnViewMinMax.graphics,
-					new Point(0,0), 
-					50,
-					1,
-					0x606060,
-					1.0,
-					true,
-					new Array(0x0066FF,0x66CCFF,0xCCCCDD),
-					new Array(1.0,1.0,1.0)
-				);
-			this.btnViewMinMax.scaleY = this.btnViewMinMax.scaleX = 0.5; 
+			this.btnViewMinMax = new UIButtonMinMax();
 			this.addChild(this.btnViewMinMax);
 			this.btnViewMinMax.x = 23;
 			this.btnViewMinMax.y = 11;
@@ -771,14 +722,11 @@ package as3.hv.core.console
 					toggleViewState
 				);
 			
-			
-			this.bgHeadline = null;
 			this.bgOutput = null;
 			this.sbOutput = null;
 			this.bgCmdLine = null;
 			this.cmdLine = null;
 			this.btnViewMinMax = null;
-		
 		}
 		
 		/**
