@@ -138,7 +138,7 @@ package as3.hv.core.console.cmd
 		 */
 		public function shortHelp():String
 		{
-			return "'" + CMD + "' - clears the consoles output";
+			return "'" + CMD + "' - shows the application times";
 		}
 		
 		/**
@@ -149,7 +149,7 @@ package as3.hv.core.console.cmd
 		public function longHelp():String
 		{
 			return "USAGE: " + CMD 
-					+ " [no args]<br/> - clears the consoles output";
+					+ " [no args]<br/> - shows the application times";
 		}
 
 	}
