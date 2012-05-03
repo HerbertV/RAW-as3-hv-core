@@ -150,7 +150,7 @@ package as3.hv.core.console
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
 			this.registerCommand( CmdExit.CMD, new CmdExit() );
-			// TODO this.registerCommand( CmdFps.CMD, new CmdFps() );
+			this.registerCommand( CmdFps.CMD, new CmdFps() );
 			this.registerCommand( CmdSystem.CMD, new CmdSystem() );
 			this.registerCommand( CmdTime.CMD, new CmdTime() );
 			
