@@ -21,11 +21,16 @@
 package as3.hv.core.console.cmd
 {
 	import flash.utils.getTimer;
-	
+	import flash.system.System;
 	import flash.display.Sprite;
+	
+	import flash.text.TextField;
+	import flash.text.TextFormat;
 	
 	import flash.events.Event;
 	import flash.events.MouseEvent;
+	
+	import as3.hv.core.math.TrueRandom;
 	
 	import as3.hv.core.console.Console;
 	import as3.hv.core.console.AbstractMonitoringView;
@@ -36,49 +41,59 @@ package as3.hv.core.console.cmd
 	
 	
 	// =========================================================================
-	// Class CmdFps
+	// Class CmdMemory
 	// =========================================================================
-	// shows a fps monitor 
-	public class CmdFps
+	// shows a memory monitor 
+	public class CmdMemory
 			extends AbstractMonitoringView
 			implements IConsoleCommand 
 	{
 		// =====================================================================
 		// Constants
 		// =====================================================================	
-		public static const CMD:String = "fps";
+		public static const CMD:String = "mem";
 		
+		public static const TO_MB_MULTIPLIER:Number = 0.000000954; 
 		
 		// =====================================================================
 		// Variables
 		// =====================================================================	
-		
 		// static singleton instance 
-		private static var myInstance:CmdFps = new CmdFps();
+		private static var myInstance:CmdMemory = new CmdMemory();
 		
-		private var fps:uint = 0;
-		private var fpsPeak:uint = 0;
+		private var memPeak:Number = 0;
+		private var memMax:Number = 0;
+		private var memMin:Number = 0;
+		private var memRange:Number = 0;
 		
 		private var headline:UIHeadline;
+		
+		private var lblMin:TextField;
+		private var lblMax:TextField;
+		private var lblPeak:TextField;
+		
 		
 		// =====================================================================
 		// Constructor
 		// =====================================================================
-		public function CmdFps()
+		public function CmdMemory()
 		{
-			super(250,85);
+			super(250,100);
 			
 			if ( myInstance ) 
-				throw new Error ("CmdFps is a singleton class, use getInstance() instead");    
+				throw new Error ("CmdMemory is a singleton class, use getInstance() instead");    
 			
-			this.minimizedWidth = 100;
-			// fps must be high ;)
-			this.lowIsGood = false;
+			this.minimizedWidth = 120;
+			
+			memMin = TrueRandom.trunc( (System.totalMemory * TO_MB_MULTIPLIER),3);
+			memMax = memMin * 3;
+			memPeak = memMin;
+			memRange = memMax - memMin;
 			
 			this.headline = new UIHeadline(
 					250,
 					25,
-					"FPS: 100"
+					"MEM:" + memMin
 				);
 			
 			this.graphWidth = currentWidth - 16;
@@ -94,11 +109,11 @@ package as3.hv.core.console.cmd
 		 * getInstance
 		 * ---------------------------------------------------------------------
 		 *
-		 * @returns 	the instance of the CmdFps
+		 * @returns 	the instance of the CmdMemory
 		 */
-		public static function getInstance():CmdFps
+		public static function getInstance():CmdMemory
 		{
-			return CmdFps.myInstance;
+			return CmdMemory.myInstance;
 		}
 		
 		/**
@@ -126,6 +141,9 @@ package as3.hv.core.console.cmd
 				this.dragHandle.graphics.endFill();
 				
 				this.spGraph.visible = false;
+				this.lblMin.visible = false;
+				this.lblMax.visible = false;
+				this.lblPeak.visible = false;
 				
 				return;
 			}
@@ -146,6 +164,10 @@ package as3.hv.core.console.cmd
 				this.dragHandle.graphics.endFill();
 				
 				this.spGraph.visible = true;
+				this.lblMin.visible = true;
+				this.lblMax.visible = true;
+				this.lblPeak.visible = true;
+				
 			}
 		}
 		/**
@@ -158,29 +180,10 @@ package as3.hv.core.console.cmd
 		 */
 		public function doCommand(args:Array):void
 		{			
-			if( args.length == 0 ) 
-			{
-				// view to the consoles parent
-				if( this.stage == null )
-					Console.getInstance().parent.addChild(this);
-				else 
-					Console.getInstance().parent.removeChild(this);
-				
-				return;
-			}
-			
-			if( args.length == 1 )
-			{
-				var newfps:int = int(args[0]);
-				if( newfps > 0 )
-				{
-					Console.getInstance().stage.frameRate = newfps;
-					Console.getInstance().writeln(
-							"set framerate to: " + newfps, 
-							DebugLevel.COMMAND
-						);
-				}
-			}
+			if( this.stage == null )
+				Console.getInstance().parent.addChild(this);
+			else 
+				Console.getInstance().parent.removeChild(this);
 		}
 		
 		/**
@@ -190,7 +193,7 @@ package as3.hv.core.console.cmd
 		 */
 		public function shortHelp():String
 		{
-			return "'" + CMD + "' - sets the new framerate or show/hide the FPS monitor";
+			return "'" + CMD + "' -  show/hide the Memory monitor";
 		}
 		
 		/**
@@ -201,8 +204,7 @@ package as3.hv.core.console.cmd
 		public function longHelp():String
 		{
 			return "USAGE: " + CMD 
-					+ " [no args or int]<br> - [no args]: show/hide the FPS monitor"
-					+ "<br> - [int]: sets the framerate to value";
+					+ " [no args ]<br> - show/hide the Memory monitor";
 		}
 		
 		
@@ -221,24 +223,34 @@ package as3.hv.core.console.cmd
 		{
 			var now:uint = getTimer();
 			var d:uint = now - this.updateTimer;
-			fps++;
-		
 			// update only after threshold is reached
 			if( d < this.updateThreshold )
 				return;
 				
 			this.updateTimer = now;
 			
-			var currentValue =  Math.min(
-					graphHeight, 
-					( fps / stage.frameRate ) * graphHeight
-				);
-			fpsPeak = Math.max(fps,fpsPeak);
+			var memInMB:Number = TrueRandom.trunc((System.totalMemory * TO_MB_MULTIPLIER),3);
 			
-			this.headline.setLabel("FPS: "+ fps );
+			if( memPeak < memInMB )
+				memPeak = memInMB;
+			
+			if( memMin > memInMB )
+				memMin = memInMB;
+			
+			if( memMax < memInMB )
+				memMax = memInMB;
+				
+			memRange = memMax - memMin;
+			
+			var currentValue:int = ((memInMB-memMin) / memRange) * graphHeight ;
+			
+			this.headline.setLabel("MEM: " + memInMB + "MB");
+			this.lblMin.text = "MIN: "+ memMin;
+			this.lblMax.text = "MAX: "+ memMax;
+			this.lblPeak.text = "PEAK: "+ memPeak;
+			
 			this.updateGraph(currentValue);
 			
-			fps = 0;
 		}
 		
 		/**
@@ -270,10 +282,40 @@ package as3.hv.core.console.cmd
 					toggleViewState
 				);
 			
-			this.layout();
 			
-			this.fps = 0;
-			this.fpsPeak = 0;
+			var lblFormat:TextFormat = new TextFormat();
+			lblFormat.font = "Arial";
+			lblFormat.color = 0xA0A0A0;
+			lblFormat.size = 9;
+			
+			this.lblMax = new TextField();
+			this.lblMax.defaultTextFormat = lblFormat;
+			this.lblMax.text = "MAX:";
+			this.lblMax.x = 8;
+			this.lblMax.y = 30;
+			this.lblMax.height = 15;
+			this.lblMax.selectable = false;
+			this.addChild(this.lblMax);
+			
+			this.lblPeak = new TextField();
+			this.lblPeak.defaultTextFormat = lblFormat;
+			this.lblPeak.text = "PEAK:";
+			this.lblPeak.x = 8;
+			this.lblPeak.y = 50;
+			this.lblPeak.height = 15;
+			this.lblPeak.selectable = false;
+			this.addChild(this.lblPeak);
+						
+			this.lblMin = new TextField();
+			this.lblMin.defaultTextFormat = lblFormat;
+			this.lblMin.text = "MIN:";
+			this.lblMin.x = 8;
+			this.lblMin.y = currentHeight - 18;
+			this.lblMin.height = 15;
+			this.lblMin.selectable = false;
+			this.addChild(this.lblMin);
+			
+			this.layout();
 		}
 		
 		/**
@@ -294,6 +336,9 @@ package as3.hv.core.console.cmd
 				);
 			
 			this.btnViewMinMax = null;
+			this.lblMin = null;
+			this.lblMax = null;
+			this.lblPeak = null;
 		}
 	
 	}

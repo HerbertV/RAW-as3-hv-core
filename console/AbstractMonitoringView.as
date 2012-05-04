@@ -156,9 +156,6 @@ package as3.hv.core.console
 			// draw the new row
 			for( var py:int=0; py< graphHeight; py++ )
 			{
-				// TODO peak/max value line 
-				// (graphHeight-py) == ((fpsPeak /stage.frameRate ) * graphHeight)
-				//
 				if( (graphHeight-py) == this.halfGValue )
 				{
 					this.bdGraph.setPixel( graphWidth-1, py, COLOR_GRAPH_LINES );

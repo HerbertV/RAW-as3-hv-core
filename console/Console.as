@@ -147,10 +147,13 @@ package as3.hv.core.console
 			
 			//now register the core commands
 			this.registerCommand( CmdHelp.CMD, new CmdHelp() );
+			
 			this.registerCommand( CmdClear.CMD, new CmdClear() );
 			this.registerCommand( CmdDebugLevel.CMD, new CmdDebugLevel() );
 			this.registerCommand( CmdExit.CMD, new CmdExit() );
-			this.registerCommand( CmdFps.CMD, new CmdFps() );
+			this.registerCommand( CmdFps.CMD, CmdFps.getInstance() );
+			//this.registerCommand( CmdGc.CMD, new CmdGc() );
+			this.registerCommand( CmdMemory.CMD, CmdMemory.getInstance() );
 			this.registerCommand( CmdSystem.CMD, new CmdSystem() );
 			this.registerCommand( CmdTime.CMD, new CmdTime() );
 			
@@ -165,7 +168,6 @@ package as3.hv.core.console
 		 * ---------------------------------------------------------------------
 		 * getInstance
 		 * ---------------------------------------------------------------------
-		 * If no instance exists one is created. 
 		 *
 		 * @returns 	the instance of the Console
 		 */
