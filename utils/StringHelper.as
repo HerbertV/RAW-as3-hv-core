@@ -182,5 +182,29 @@ package as3.hv.core.utils
 			return str;
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * leadingZeros
+		 * ---------------------------------------------------------------------
+		 * converts an int into an string and adds leading zeros
+		 * 
+		 * @param i			integer to convert
+		 * @param zeros		zero string represents also the digit count
+		 *					default is "00", which adds one leading zero if
+		 *					i is smaller 10
+		 *
+		 * @returns			integer as string with leading zeros
+		 */
+		public static function leadingZeros(
+				i:int, 
+				zeros:String="00"
+			):String
+		{
+			var strInt:String = String(i);
+			zeros = zeros.substring(0,zeros.length-strInt.length);
+			
+			return zeros+strInt;
+		}
+		
 	}
 }
