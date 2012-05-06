@@ -23,6 +23,8 @@ package as3.hv.core.console.cmd
 	import as3.hv.core.console.Console;
 	import as3.hv.core.console.DebugLevel;
 	
+	import as3.hv.core.utils.DateTimeFormatter;
+	
 	// =========================================================================
 	// Class CmdTime
 	// =========================================================================
@@ -73,39 +75,9 @@ package as3.hv.core.console.cmd
 			var dms:int = ( (d % 3600000) % 60000 ) % 1000;
 			
 			var msg:String = "Application started at: " 
-					+ startTime.fullYear
-					+ "-";
-			
-			if( (startTime.month+1) < 10 )
-				msg += "0";
-			
-			msg += ( startTime.month + 1 )
-					+ "-";
-		
-			if( startTime.date < 10 )
-				msg += "0";
-			
-			msg += startTime.date
-					+ " " + startTime.hours
-					+ ":" + startTime.minutes
-					+ ":" + startTime.seconds 
+					+ DateTimeFormatter.defaultFormat(startTime)
 					+ "<br>now: "
-					+ now.fullYear
-					+ "-";
-			
-			if( (now.month+1) < 10 )
-				msg += "0";
-			
-			msg += ( now.month + 1 )
-					+ "-";
-		
-			if( now.date < 10 )
-				msg += "0";
-			
-			msg += now.date 
-					+ " " + now.hours
-					+ ":" + now.minutes
-					+ ":" + now.seconds 
+					+ DateTimeFormatter.defaultFormat(now)
 					+ "<br>running for: "
 					+ dH + "h "
 					+ dM + "min "

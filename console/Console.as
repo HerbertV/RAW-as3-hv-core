@@ -36,6 +36,8 @@ package as3.hv.core.console
 	import flash.ui.Keyboard;
 	
 	import as3.hv.core.utils.StringHelper;
+	import as3.hv.core.utils.DateTimeFormatter;
+	
 	import as3.hv.core.shapes.EdgedRectangle;
 	import as3.hv.core.console.cmd.*;
 	
@@ -177,6 +179,21 @@ package as3.hv.core.console
 			return Console.myInstance;
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * isConsoleAvailable
+		 * ---------------------------------------------------------------------
+		 * the conole is only available for debugging if it was added to the stage
+		 * 
+		 * @returns 	returns true if console was added to stage
+		 */
+		public static function isConsoleAvailable():Boolean
+		{
+			if( Console.myInstance.parent != null )
+				return true;
+			
+			return false;
+		}
 		
 		/**
 		 * ---------------------------------------------------------------------
@@ -378,7 +395,8 @@ package as3.hv.core.console
 					{
 						this.writeln(
 								"CMD: "+cmdstring,
-								DebugLevel.DEBUG,
+								DebugLevel.COMMAND,
+								null,
 								false
 							);
 						
@@ -465,7 +483,8 @@ package as3.hv.core.console
 			
 			this.writeln(
 					"<b> &gt; &gt; CONSOLE READY &lt; &lt; </b>",
-					DebugLevel.INFO,
+					DebugLevel.COMMAND,
+					null,
 					false
 				);
 			this.newLine();
@@ -486,7 +505,7 @@ package as3.hv.core.console
 		private function formatMessage(
 				msg:String, 
 				level:int=-1
-			):Stirng
+			):String
 		{
 			var formatedMsg = "<font face='" 
 					+ UIStyles.MSG_FONT_NAME 
@@ -497,30 +516,43 @@ package as3.hv.core.console
 			{
 				case DebugLevel.FATAL_ERROR:
 					formatedMsg += UIStyles.MSG_COLOR_ERROR 
-							+ "'><b> &gt; &gt; !!FATAL ERROR!! &lt; &lt; </b><br>" 
+							+ "'><b>";
+					if( showTimeStamp )
+						formatedMsg += getTimeStamp();
+					formatedMsg += " &gt; &gt; !!FATAL ERROR!! &lt; &lt; </b><br>" 
 							+ msg + "</font>";
 					break;
 				
 				case DebugLevel.ERROR:
 					formatedMsg += UIStyles.MSG_COLOR_ERROR 
-							+ "'><b> &gt; &gt; !ERROR! &lt; &lt; </b><br>"
+							+ "'><b>";
+					if( showTimeStamp )
+						formatedMsg += getTimeStamp();
+					formatedMsg += " &gt; &gt; !ERROR! &lt; &lt; </b><br>"
 							+ msg + "</font>";
 					break;
 					
 				case DebugLevel.WARNING:
 					formatedMsg += UIStyles.MSG_COLOR_WARNING
-							+ "'><b> &gt; &gt; WARNING &lt; &lt; </b><br>"
+							+ "'><b>";
+					if( showTimeStamp )
+						formatedMsg += getTimeStamp();
+					formatedMsg += " &gt; &gt; WARNING &lt; &lt; </b><br>"
 							+ msg + "</font>";
 					break;
 					
 				case DebugLevel.DEBUG:
-					formatedMsg += UIStyles.MSG_COLOR_DEBUG + "'>" 
-							+ msg + "</font>";
+					formatedMsg += UIStyles.MSG_COLOR_DEBUG + "'>";
+					if( showTimeStamp )
+						formatedMsg += getTimeStamp() + " ";
+					formatedMsg += msg + "</font>";
 					break;
 				
 				case DebugLevel.INFO:
-					formatedMsg += UIStyles.MSG_COLOR_INFO + "'>" 
-							+ msg + "</font>";
+					formatedMsg += UIStyles.MSG_COLOR_INFO + "'>";
+					if( showTimeStamp )
+						formatedMsg += getTimeStamp() + " ";
+					formatedMsg += msg + "</font>";
 					break;
 				
 				case DebugLevel.COMMAND:
@@ -544,6 +576,21 @@ package as3.hv.core.console
 		
 		/**
 		 * ---------------------------------------------------------------------
+		 * getTimeStamp
+		 * ---------------------------------------------------------------------
+		 * creates as timestamp string
+		 *
+		 * @return 			the timestamp
+		 */
+		private function getTimeStamp():String
+		{
+			var ts:String = "[" + DateTimeFormatter.defaultFormat( new Date() ) + "]";
+			
+			return ts;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
 		 * writeln
 		 * ---------------------------------------------------------------------
 		 * @param msgHead 		Headline of the message (html formated)
@@ -562,7 +609,7 @@ package as3.hv.core.console
 		{
 			if( doCheck && !DebugLevel.check(level) )
 				return;
-						
+			
 			this.txtOutput.htmlText += this.formatMessage(msgHead,level);
 			if( msgBody != null && msgBody != "" )
 				this.txtOutput.htmlText += this.formatMessage(msgBody);

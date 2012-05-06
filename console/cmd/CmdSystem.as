@@ -66,7 +66,7 @@ package as3.hv.core.console.cmd
 					+ "<br>Display: " + Capabilities.screenResolutionX 
 					+ "x" + Capabilities.screenResolutionY;
 					
-			Console.getInstance().writeln(msg, DebugLevel.INFO,false);
+			Console.getInstance().writeln(msg, DebugLevel.COMMAND);
 			Console.getInstance().newLine();
 		}
 		

@@ -66,7 +66,7 @@ package as3.hv.core.console.cmd
 					msg += "<li>" + IConsoleCommand(args[i]).shortHelp() + "</li>";
 					
 			}
-			Console.getInstance().writeln(msg, DebugLevel.INFO, false);
+			Console.getInstance().writeln(msg, DebugLevel.COMMAND, null, false);
 			Console.getInstance().newLine();
 		}
 		
