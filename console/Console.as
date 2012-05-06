@@ -105,6 +105,7 @@ package as3.hv.core.console
 		private var cmdStackIdx:int = -1;
 		private var cmdStackSize:int = 10;
 		
+		private var showTimeStamp:Boolean = false;
 		
 		// =====================================================================
 		// Constructor
@@ -295,6 +296,19 @@ package as3.hv.core.console
 			this.headline.setLabel(txt);
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * setShowTimeStamp
+		 * ---------------------------------------------------------------------
+		 * sets if a timestamp is shown within the message head.
+		 * 
+		 * @param val		show/hide timestamp
+		 */
+		public function setShowTimeStamp(val:Boolean):void
+		{
+			this.showTimeStamp = val;
+		}
+		
 		
 		/**
 		 * ---------------------------------------------------------------------
@@ -463,22 +477,17 @@ package as3.hv.core.console
 		
 		/**
 		 * ---------------------------------------------------------------------
-		 * writeln
+		 * formatMessage
 		 * ---------------------------------------------------------------------
 		 * @param msg 			Message (html formated)
-		 * @param level			debug level of the messge
-		 * @param doCheck		if false the current debug level of the message
-		 * 						is not checked and the message is allways shown.
+		 * @param level			debug level of the messge, just used for styling 
+		 *						here. If -1 default style is used.
 		 */
-		public function writeln(
-				msg:String,
-				level:int,
-				doCheck:Boolean=true
-			) 
+		private function formatMessage(
+				msg:String, 
+				level:int=-1
+			):Stirng
 		{
-			if( doCheck && !DebugLevel.check(level) )
-				return;
-						
 			var formatedMsg = "<font face='" 
 					+ UIStyles.MSG_FONT_NAME 
 					+ "' size='" + UIStyles.MSG_FONT_SIZE 
@@ -523,9 +532,41 @@ package as3.hv.core.console
 					formatedMsg += UIStyles.MSG_COLOR_ERROR + "'>" 
 							+ msg + "</font>";
 					break;
+					
+				default:
+					formatedMsg += UIStyles.MSG_COLOR_DEFAULT + "'>" 
+							+ msg + "</font>";
+					break;
 			}
 			
-			this.txtOutput.htmlText = this.txtOutput.htmlText + formatedMsg;
+			return formatedMsg;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * writeln
+		 * ---------------------------------------------------------------------
+		 * @param msgHead 		Headline of the message (html formated)
+		 * @param level			debug level of the messge
+		 * @param msgBody		optional if you want to provide some more infos.
+		 *						a body uses allways the default style.
+		 * @param doCheck		if false the current debug level of the message
+		 * 						is not checked and the message is allways shown.
+		 */
+		public function writeln(
+				msgHead:String,
+				level:int,
+				msgBody:String=null,
+				doCheck:Boolean=true
+			) 
+		{
+			if( doCheck && !DebugLevel.check(level) )
+				return;
+						
+			this.txtOutput.htmlText += this.formatMessage(msgHead,level);
+			if( msgBody != null && msgBody != "" )
+				this.txtOutput.htmlText += this.formatMessage(msgBody);
+			
 			if( this.doAutoScroll )
 				this.txtOutput.scrollV = this.txtOutput.numLines;
 			

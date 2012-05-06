@@ -68,6 +68,7 @@ package as3.hv.core.console
 		public static var MSG_FONT_NAME:String = "Arial";
 		public static var MSG_FONT_SIZE:int = 11;
 		
+		public static var MSG_COLOR_DEFAULT:String = "#FFFFFF";
 		public static var MSG_COLOR_COMMAND:String = "#0099FF";
 		public static var MSG_COLOR_INFO:String = "#00CC00";
 		public static var MSG_COLOR_DEBUG:String = "#FFFFFF";
