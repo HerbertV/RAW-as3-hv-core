@@ -202,7 +202,7 @@ package as3.hv.core.net
 			
 			this.loadingFailed = true;
 			// look whos watching
-			this.dispatcher.dispatchEvent(event.clone());
+			this.dispatcher.dispatchEvent(e.clone());
 		}
 
 		/**
@@ -220,7 +220,7 @@ package as3.hv.core.net
 			this.intBytesLoaded = e.bytesLoaded;
 			
 			// look whos watching
-			this.dispatcher.dispatchEvent(event.clone());
+			this.dispatcher.dispatchEvent(e.clone());
 		}
 		
 		
