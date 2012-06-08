@@ -30,6 +30,8 @@ package as3.hv.core.net
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.ProgressEvent;
+	
+	import as3.hv.core.console.Console;
 		
 	// =========================================================================
 	// Class ModuleLoader
