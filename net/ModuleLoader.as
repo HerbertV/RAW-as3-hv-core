@@ -32,6 +32,7 @@ package as3.hv.core.net
 	import flash.events.ProgressEvent;
 	
 	import as3.hv.core.console.Console;
+	import as3.hv.core.console.DebugLevel;
 		
 	// =========================================================================
 	// Class ModuleLoader

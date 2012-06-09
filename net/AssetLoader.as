@@ -167,7 +167,7 @@ package as3.hv.core.net
 		 *
 		 * @param e			IOErrorEvent
 		 */
-		protected function ioErrorHandler(e:IOErrorEvent):void 
+		override protected function ioErrorHandler(e:IOErrorEvent):void 
 		{
         	super.ioErrorHandler(e);
 			
