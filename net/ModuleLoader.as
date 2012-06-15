@@ -53,7 +53,6 @@ package as3.hv.core.net
 		
 		protected var moduleVersion:String = "";
 		
-		
 		// =====================================================================
 		// Constructors
 		// =====================================================================
@@ -62,6 +61,7 @@ package as3.hv.core.net
 		 * Constructor		
 		 *
 		 * @param target
+		 * @param version
 		 * @param instant	use true if your module is optimized for streaming
 		 */
 		public function ModuleLoader(
