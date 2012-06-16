@@ -27,7 +27,6 @@ package as3.hv.core.net
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 	
-	
 	// =========================================================================
 	// Class AssetLoader
 	// =========================================================================
@@ -40,7 +39,6 @@ package as3.hv.core.net
 		// =====================================================================
 		// Variables
 		// =====================================================================
-		
 		protected var myLoader:Loader = null;
 		
 		
@@ -51,8 +49,7 @@ package as3.hv.core.net
 		{
 			super();
 		}
-		
-		
+				
 		// =====================================================================
 		// Functions
 		// =====================================================================
@@ -95,6 +92,9 @@ package as3.hv.core.net
 		{
 			super.dispose();
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.contentLoaderInfo.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -108,7 +108,6 @@ package as3.hv.core.net
 					completeHandler
 				); 
 						
-			this.myLoader.close();
 			this.myLoader = null;
 		}
 		
@@ -122,9 +121,9 @@ package as3.hv.core.net
 		 */
 		public function getContent():Object
 		{
-			if (this.myLoader != null) {
+			if( this.myLoader != null )
 				return this.myLoader.content;
-			}
+			
 			return null;
 		}
 		
@@ -145,6 +144,9 @@ package as3.hv.core.net
 		{
 			super.completeHandler(e);
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.contentLoaderInfo.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -171,6 +173,9 @@ package as3.hv.core.net
 		{
         	super.ioErrorHandler(e);
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.contentLoaderInfo.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
