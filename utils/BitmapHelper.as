@@ -67,7 +67,7 @@ package as3.hv.core.utils
 			var ratioWidth:Number = maxWidth/bmp.width;
 			var ratioHeight:Number = maxHeight/bmp.height;
 			
-			if( Console.isConsoleAvialable() )
+			if( Console.isConsoleAvailable() )
 				Console.getInstance().writeln(
 						"resizing Bitmap...",
 						DebugLevel.INFO,
@@ -97,7 +97,7 @@ package as3.hv.core.utils
 					bmp.y = (maxHeight - bmp.height) / 2;
 				}
 				
-				if( Console.isConsoleAvialable() )
+				if( Console.isConsoleAvailable() )
 					Console.getInstance().writeln(
 							"after resize:",
 							DebugLevel.INFO,

@@ -21,7 +21,6 @@
 package as3.hv.core.net
 {
 	import flash.display.MovieClip;
-	import flash.display.DisplayObject;
 	import flash.display.Bitmap;
 	
 	import flash.display.Loader;
@@ -81,11 +80,11 @@ package as3.hv.core.net
 		 *
 		 * @return 
 		 */
-		public function getImage():DisplayObject
+		public function getImage():Bitmap
 		{
-			if( this.isImageLoaded == true 
+			if( this.loadingFinished == true 
 					&& this.loadingFailed == false ) 
-				return DisplayObject(myLoader.content);
+				return Bitmap(myLoader.content);
 			
 			return null;
 		}
@@ -108,7 +107,7 @@ package as3.hv.core.net
 			
 			if( targetContainer != null )
 			{
-				var image:Bitmap = Bitmap(loadevent.currentTarget.content);
+				var image:Bitmap = Bitmap(e.currentTarget.content);
 				this.targetContainer.addChild(image);
 			}
 		}
