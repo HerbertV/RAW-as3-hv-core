@@ -54,15 +54,19 @@ package as3.hv.core.net
 		// =====================================================================
 		
 		/**
-		 * Constructor		
-		 *
-		 * @param target
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
+		 * @param target (optional)
 		 */
 		public function ImageLoader(
+				file:String,
+				name:String="ImageLoader",
 				target:MovieClip=null
 			)
 		{
-			super();
+			super(file,name);
 			
 			this.targetContainer = target;
 		}

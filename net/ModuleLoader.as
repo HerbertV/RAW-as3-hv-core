@@ -58,19 +58,24 @@ package as3.hv.core.net
 		// =====================================================================
 		
 		/**
-		 * Constructor		
-		 *
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
 		 * @param target
 		 * @param version
-		 * @param instant	use true if your module is optimized for streaming
+		 * @param name (optional)
+		 * @param instant (optional)
+		 *			use true if your module is optimized for streaming
 		 */
 		public function ModuleLoader(
+				file:String,
 				target:MovieClip,
 				version:String,
+				name:String="ModuleLoader",
 				instant:Boolean=false
 			)
 		{
-			super();
+			super(file,name);
 			
 			this.targetContainer = target;
 			this.moduleVersion = version;

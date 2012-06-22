@@ -51,13 +51,19 @@ package as3.hv.core.net
 		// =====================================================================
 		
 		/**
-		 * Constructor		
-		 *
-		 * @param target	Target text field (optional)
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
+		 * @param target (optional) Target text field
 		 */
-		public function HTMLLoader( target:TextField=null )
+		public function HTMLLoader( 
+				file:String,
+				name:String="HTMLLoader",
+				target:TextField=null 
+			)
 		{
-			super();
+			super(file,name);
 			
 			this.myTarget = target;
 		}
@@ -65,6 +71,19 @@ package as3.hv.core.net
 		// =====================================================================
 		// Functions
 		// =====================================================================
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * loadFile
+		 * ---------------------------------------------------------------------
+		 *
+		 * @param file 
+		 */
+		public function loadFile(file:String):void 
+		{
+			this.filename = file;
+			this.load();
+		}
 		
 		/**
 		 * ---------------------------------------------------------------------

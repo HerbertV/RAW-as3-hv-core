@@ -47,9 +47,18 @@ package as3.hv.core.net
 		// =====================================================================
 		// Constructor
 		// =====================================================================
-		public function AssetURLLoader()
+		/**
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
+		 */
+		public function AssetURLLoader(
+				file:String,
+				name:String=""
+			)
 		{
-			super();
+			super(file,name);
 		}
 		
 		
@@ -61,16 +70,15 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * loadFile
 		 * ---------------------------------------------------------------------
-		 * overridden to init the loader and add the event listeners 
-		 *
-		 * @param file		filename with relative/absolute path
+		 * overridden to start the loader and add the event listeners 
 		 */
-		override public function loadFile(file:String)
+		override public function load():void
 		{
-			super.loadFile(file);
+			if( filename == null || filename == "" )
+				throw new Error(this.myName + " has no filename");
 			
-			this.myLoader = new URLLoader(new URLRequest(filename));
-			this.myLoader.load(new URLRequest(file));
+			this.myLoader = new URLLoader();
+			this.myLoader.load(new URLRequest(filename));
 			
 			this.myLoader.addEventListener(
 					IOErrorEvent.IO_ERROR, 

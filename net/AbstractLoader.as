@@ -40,8 +40,12 @@ package as3.hv.core.net
 		// =====================================================================
 		// Variables
 		// =====================================================================
+		// stay awhile and listen
 		protected var dispatcher:EventDispatcher;
-
+		
+		// to identify a loader
+		protected var myName:String;
+		// the file to load
 		protected var filename:String;
 		
 		protected var intBytesLoaded:int;
@@ -50,13 +54,33 @@ package as3.hv.core.net
 		protected var loadingFinished:Boolean;
 		protected var loadingFailed:Boolean;
 		
+		// for serialized loading.
+		protected var nextLoader:AbstractLoader;
 		
 		// =====================================================================
 		// Constructor
 		// =====================================================================
-		public function AbstractLoader()
+		/**
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
+		 */
+		public function AbstractLoader(
+				file:String,
+				name:String=""
+			)
 		{
+			this.myName = name;
+			this.filename = file;
+			
+			this.intBytesLoaded = 0;
+			this.intBytesTotal = 0;
+			this.loadingFinished = false;
+			this.loadingFailed = false;
+			
 			this.dispatcher = new EventDispatcher(this);
+			this.nextLoader = null;
 		}
 		
 		
@@ -66,19 +90,13 @@ package as3.hv.core.net
 		
 		/**
 		 * ---------------------------------------------------------------------
-		 * loadFile
+		 * load
 		 * ---------------------------------------------------------------------
-		 * needs to be overridden.
-		 * 
-		 * @param file		filename with relative/absolute path
+		 * needs to be overridden. Will start the loading.
 		 */
-		public function loadFile(file:String)
+		public function load():void
 		{
-			this.intBytesLoaded = 0;
-			this.intBytesTotal = 0;
-			this.filename = file;
-			this.loadingFinished = false;
-			this.loadingFailed = false;
+			throw new Error("AbstractLoader load() is not implemented");
 		}
 		
 		/**
@@ -90,12 +108,37 @@ package as3.hv.core.net
 		public function dispose():void
 		{
 			this.dispatcher = null;
+			this.filename = null;
+			this.myName = null;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * getName
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function getName():String
+		{
+			return this.myName;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * getFilename
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function getFilename():String
+		{
+			return this.filename;
 		}
 		
 		/**
 		 * ---------------------------------------------------------------------
 		 * getBytesTotal
 		 * ---------------------------------------------------------------------
+		 * @return
 		 */
 		final public function getBytesTotal():int
 		{
@@ -106,6 +149,7 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * getBytesLoaded
 		 * ---------------------------------------------------------------------
+		 * @return
 		 */
 		final public function getBytesLoaded():int
 		{
@@ -128,6 +172,7 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * isLoadingFinished
 		 * ---------------------------------------------------------------------
+		 * @return
 		 */
 		final public function isLoadingFinished():Boolean
 		{
@@ -138,10 +183,39 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * isLoadingFailed
 		 * ---------------------------------------------------------------------
+		 * @return
 		 */
 		final public function isLoadingFailed():Boolean
 		{
 			return this.loadingFailed;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * addNext
+		 * ---------------------------------------------------------------------
+		 * add new loader that is loaded after this one is finished or failed.
+		 *
+		 * @param loader
+		 */
+		final public function addNext(loader:AbstractLoader):void
+		{
+			this.nextLoader = loader;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * getNext
+		 * ---------------------------------------------------------------------
+		 * the next loader form our serialized loader chain.
+		 * use this in a complete and/or ioError listener 
+		 * and call load() afterwards.
+		 *
+		 * @return
+		 */
+		final public function getNext():AbstractLoader
+		{
+			return this.nextLoader;
 		}
 		
 		// =====================================================================

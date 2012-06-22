@@ -47,9 +47,18 @@ package as3.hv.core.net
 		// Constructors
 		// =====================================================================
 		
-		public function CSSLoader()
+		/**
+		 * Constructor
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
+		 */
+		public function CSSLoader(
+				file:String,
+				name:String="CSSLoader"
+			)
 		{
-			super();
+			super(file,name);
 			
 			this.myCSS = new StyleSheet();
 		}
