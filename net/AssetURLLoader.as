@@ -103,6 +103,9 @@ package as3.hv.core.net
 		{
 			super.dispose();
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -153,6 +156,9 @@ package as3.hv.core.net
 		{
 			super.completeHandler(e);
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -179,6 +185,9 @@ package as3.hv.core.net
 		{
         	super.ioErrorHandler(e);
 			
+			if( this.myLoader == null )
+				return;
+				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
