@@ -322,7 +322,8 @@ package as3.hv.core.net
 					type, 
 					listener, 
 					useCapture, 
-					priority
+					priority,
+					useWeakReference
 				);
 		}
 			   
