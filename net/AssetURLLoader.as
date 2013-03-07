@@ -10,10 +10,10 @@
  *
  * -----------------------------------------------------------------------------
  * @author: Herbert Veitengruber 
- * @version: 1.0.0
+ * @version: 1.1.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2010-2012 Herbert Veitengruber 
+ * Copyright (c) 2010-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -25,15 +25,17 @@ package as3.hv.core.net
 	import flash.events.ProgressEvent;
 	
 	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.net.URLRequest;
 	
 	
-	// =========================================================================
-	// Class AssetURLLoader
-	// =========================================================================
-	// This loader is based on flash.net.URLLoader, so it is usefull for
-	// loading for text files.
-	// 
+	/**
+	 * =========================================================================
+	 * Class AssetURLLoader
+	 * =========================================================================
+	 * This loader is based on flash.net.URLLoader, so it is usefull for
+	 * loading for text files.
+	 */ 
 	public class AssetURLLoader
 			extends AbstractLoader
 	{
@@ -43,22 +45,16 @@ package as3.hv.core.net
 		
 		protected var myLoader:URLLoader = null;
 		
+		protected var defaultDataFormat:String = URLLoaderDataFormat.TEXT;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
 		/**
-		 * Constructor
-		 * 
-		 * @param file filename with relative/absolute path
-		 * @param name (optional)
+		 * =====================================================================
+		 * Constructor		
+		 * =====================================================================
 		 */
-		public function AssetURLLoader(
-				file:String,
-				name:String=""
-			)
+		public function AssetURLLoader()
 		{
-			super(file,name);
+			super();
 		}
 		
 		
@@ -70,15 +66,17 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * loadFile
 		 * ---------------------------------------------------------------------
-		 * overridden to start the loader and add the event listeners 
+		 * overridden to init the loader and add the event listeners 
+		 *
+		 * @param file		filename with relative/absolute path
 		 */
-		override public function load():void
+		override public function loadFile(file:String)
 		{
-			if( filename == null || filename == "" )
-				throw new Error(this.myName + " has no filename");
+			super.loadFile(file);
 			
-			this.myLoader = new URLLoader();
-			this.myLoader.load(new URLRequest(filename));
+			this.myLoader = new URLLoader(new URLRequest(filename));
+			this.myLoader.dataFormat = this.defaultDataFormat;
+			this.myLoader.load(new URLRequest(file));
 			
 			this.myLoader.addEventListener(
 					IOErrorEvent.IO_ERROR, 
@@ -103,9 +101,6 @@ package as3.hv.core.net
 		{
 			super.dispose();
 			
-			if( this.myLoader == null )
-				return;
-				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -129,7 +124,7 @@ package as3.hv.core.net
 		 * ---------------------------------------------------------------------
 		 * returns the loaded content 
 		 *
-		 * @return			content as object
+		 * @return	content as object
 		 */
 		public function getContent():Object
 		{
@@ -156,9 +151,6 @@ package as3.hv.core.net
 		{
 			super.completeHandler(e);
 			
-			if( this.myLoader == null )
-				return;
-				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
@@ -185,9 +177,6 @@ package as3.hv.core.net
 		{
         	super.ioErrorHandler(e);
 			
-			if( this.myLoader == null )
-				return;
-				
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
 					ioErrorHandler
