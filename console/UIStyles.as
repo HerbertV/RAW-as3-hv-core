@@ -13,18 +13,19 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  */
 package as3.hv.core.console
 {
-	// =========================================================================
-	// Class UIStyles
-	// =========================================================================
-	// statics for styling our console
-	//
+	/**
+	 * =========================================================================
+	 * Class UIStyles
+	 * =========================================================================
+	 * statics for styling our console
+	 */
 	public class UIStyles
 	{
 		// =====================================================================

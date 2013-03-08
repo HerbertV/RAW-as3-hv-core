@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -35,10 +35,12 @@ package as3.hv.core.console.cmd
 	import as3.hv.core.console.UIButtonMinMax;
 	
 	
-	// =========================================================================
-	// Class CmdFps
-	// =========================================================================
-	// shows a fps monitor 
+	/**
+	 * =========================================================================
+	 * Class CmdFps
+	 * =========================================================================
+	 * shows a fps monitor
+	 */
 	public class CmdFps
 			extends AbstractMonitoringView
 			implements IConsoleCommand 
@@ -61,9 +63,11 @@ package as3.hv.core.console.cmd
 		
 		private var headline:UIHeadline;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function CmdFps()
 		{
 			super(250,85);
@@ -181,6 +185,19 @@ package as3.hv.core.console.cmd
 						);
 				}
 			}
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * @see IConsoleCommand 
+		 *
+		 * @return
+		 */
+		public function usesArguments():Boolean
+		{
+			return true;
 		}
 		
 		/**

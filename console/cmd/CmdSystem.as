@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -25,10 +25,12 @@ package as3.hv.core.console.cmd
 	
 	import flash.system.Capabilities;
 	
-	// =========================================================================
-	// Class CmdSystem
-	// =========================================================================
-	// shows a brief system info
+	/**
+	 * =========================================================================
+	 * Class CmdSystem
+	 * =========================================================================
+	 * shows a brief system info
+	 */
 	public class CmdSystem 
 			implements IConsoleCommand 
 	{
@@ -38,9 +40,11 @@ package as3.hv.core.console.cmd
 		public static const CMD:String = "system";
 		
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function CmdSystem()
 		{
 			
@@ -70,6 +74,18 @@ package as3.hv.core.console.cmd
 			Console.getInstance().newLine();
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * @see IConsoleCommand 
+		 *
+		 * @return
+		 */
+		public function usesArguments():Boolean
+		{
+			return false;
+		}
 		
 		/**
 		 * ---------------------------------------------------------------------

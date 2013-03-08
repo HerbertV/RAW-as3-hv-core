@@ -10,31 +10,32 @@
  *
  * -----------------------------------------------------------------------------
  * @author: Herbert Veitengruber 
- * @version: 2.0.0
+ * @version: 2.1.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
  */
 package as3.hv.core.console.cmd
 {
-	// =========================================================================
-	// Interface IConsoleCommand
-	// =========================================================================
-	// Interface for Console Commands.
-	//
-	// How to use:
-	// Make a new class file implementining this interface.
-	// Naming convention: Cmd[commandname].as
-	// 
-	// add the CMD constant in your class:
-	// public static const CMD:String = "command";
-	//	
-	// add your command to Console with:
-	// registerCommand(CmdHelp.CMD, new CmdHelp(this));
-	// 
+	/**
+	 * =========================================================================
+	 * Interface IConsoleCommand
+	 * =========================================================================
+	 * Interface for Console Commands.
+	 *
+	 * How to use:
+	 * Make a new class file implementining this interface.
+	 * Naming convention: Cmd[commandname].as
+	 * 
+	 * add the CMD constant in your class:
+	 * public static const CMD:String = "command";
+	 *	
+	 * add your command to Console with:
+	 * registerCommand(CmdHelp.CMD, new CmdHelp(this));
+	 */ 
 	public interface IConsoleCommand 
 	{
 		/**
@@ -46,7 +47,17 @@ package as3.hv.core.console.cmd
 		 * @param args 		array of arguments.
 		 */
 		function doCommand(args:Array):void;
-				
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * this function must return true, if args of doCommand are used.
+		 * 
+		 * @return 
+		 */
+		function usesArguments():Boolean;
+		
 		/**
 		 * ---------------------------------------------------------------------
 		 * longHelp

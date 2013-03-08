@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -29,12 +29,13 @@ package as3.hv.core.console
 	import flash.events.MouseEvent;
 	
 	import as3.hv.core.shapes.EdgedRectangle;
-
-	// =========================================================================
-	// Class AbstractConsoleView
-	// =========================================================================
-	// Abstract base for all Views that are console related.
-	//
+	
+	/**
+	 * =========================================================================
+	 * Class AbstractConsoleView
+	 * =========================================================================
+	 * Abstract base for all Views that are console related.
+	 */
 	public class AbstractConsoleView 
 			extends Sprite
 	{
@@ -83,12 +84,11 @@ package as3.hv.core.console
 		protected var btnViewMinMax:UIButtonMinMax;
 		
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
 		/**
+		 * =====================================================================
 		 * Constructor 
-		 *
+		 * =====================================================================
+		 * 
 		 * @param w 		width of this view
 		 * @param h			height of this view
 		 */

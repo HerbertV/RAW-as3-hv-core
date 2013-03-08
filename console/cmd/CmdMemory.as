@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -40,10 +40,12 @@ package as3.hv.core.console.cmd
 	import as3.hv.core.console.UIButtonMinMax;
 	
 	
-	// =========================================================================
-	// Class CmdMemory
-	// =========================================================================
-	// shows a memory monitor 
+	/**
+	 * =========================================================================
+	 * Class CmdMemory
+	 * =========================================================================
+	 * shows a memory monitor 
+	 */
 	public class CmdMemory
 			extends AbstractMonitoringView
 			implements IConsoleCommand 
@@ -73,9 +75,11 @@ package as3.hv.core.console.cmd
 		private var lblPeak:TextField;
 		
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function CmdMemory()
 		{
 			super(250,100);
@@ -184,6 +188,19 @@ package as3.hv.core.console.cmd
 				Console.getInstance().parent.addChild(this);
 			else 
 				Console.getInstance().parent.removeChild(this);
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * @see IConsoleCommand 
+		 *
+		 * @return
+		 */
+		public function usesArguments():Boolean
+		{
+			return false;
 		}
 		
 		/**

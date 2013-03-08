@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -27,11 +27,12 @@ package as3.hv.core.console
 	
 	import as3.hv.core.shapes.EdgedRectangle;
 
-	// =========================================================================
-	// Class UIHeadline
-	// =========================================================================
-	// Default Headline Sprite for Console and Monitoring Views
-	//
+	/**
+	 * =========================================================================
+	 * Class UIHeadline
+	 * =========================================================================
+	 * Default Headline Sprite for Console and Monitoring Views
+	 */
 	public class UIHeadline 
 			extends Sprite
 	{
@@ -46,10 +47,10 @@ package as3.hv.core.console
 		private var bgHeadline:Sprite;
 		
 		/**
+		 * =====================================================================
 		 * Constructor 
-		 *
-		 * @param posx
-		 * @param posy
+		 * =====================================================================
+		 * 
 		 * @param w
 		 * @param h
 		 * @param lbl

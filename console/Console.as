@@ -10,10 +10,10 @@
  *
  * -----------------------------------------------------------------------------
  * @author: Herbert Veitengruber 
- * @version: 2.0.0
+ * @version: 2.0.1
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -32,31 +32,33 @@ package as3.hv.core.console
 	import flash.events.Event;
 	import flash.events.MouseEvent;
 	import flash.events.KeyboardEvent;
-
+	import flash.events.FocusEvent;
+	
 	import flash.ui.Keyboard;
 	
 	import as3.hv.core.utils.StringHelper;
 	import as3.hv.core.utils.DateTimeFormatter;
+	import as3.hv.core.utils.AutoCompleter;
 	
 	import as3.hv.core.shapes.EdgedRectangle;
 	import as3.hv.core.console.cmd.*;
 	
-	
-	// =========================================================================
-	// Class Console
-	// =========================================================================
-	// an ActionScript 3 Console for on-the-fly logging, debugging, monitoring
-	// with command line.
-	//
-	//
-	// History Note:
-	// -------------------------------------------------------------------------
-	// Version 1.0 was written in AS2 and used a MovieClip you had to include 
-	// into to your fla's library.
-	// Version 1.1 was the first version written in AS3.
-	// Version 1.2 added the command line
-	// Version 2.0 complete code revision
-	//
+	/**
+	 * =========================================================================
+	 * Class Console
+	 * =========================================================================
+	 * an ActionScript 3 Console for on-the-fly logging, debugging, monitoring
+	 * with command line.
+	 *
+	 *
+	 * History Note:
+	 * -------------------------------------------------------------------------
+	 * Version 1.0 was written in AS2 and used a MovieClip you had to include 
+	 * into to your fla's library.
+	 * Version 1.1 was the first version written in AS3.
+	 * Version 1.2 added the command line
+	 * Version 2.0 complete code revision
+	 */
 	public class Console
 			extends AbstractConsoleView
 	{
@@ -64,7 +66,7 @@ package as3.hv.core.console
 		// Constants
 		// =====================================================================
 		// Class version
-		public static const VERSION:String = "2.0.0";
+		public static const VERSION:String = "2.0.1";
 		
 		public static const CMDLINE_MARGIN_X:Number = 10;
 		public static const CMDLINE_MARGIN_Y:Number = 4;
@@ -99,9 +101,8 @@ package as3.hv.core.console
 		private var doAutoScroll:Boolean = true;
 		
 		// for show/hide console
-		private var toggleKey:uint = 220; //^
-		
-		
+		private var toggleKey:uint = Keyboard.F1;
+				
 		// command stack for storing the last commands
 		private var arrCmdStack:Array = new Array();
 		private var cmdStackIdx:int = -1;
@@ -109,11 +110,10 @@ package as3.hv.core.console
 		
 		private var showTimeStamp:Boolean = false;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
 		/**
+		 * =====================================================================
 		 * Constructor 
+		 * =====================================================================
 		 *
 		 * Cannot called directly since this class is a singleton.
 		 * use getInstance instead.
@@ -172,7 +172,7 @@ package as3.hv.core.console
 		 * getInstance
 		 * ---------------------------------------------------------------------
 		 *
-		 * @returns 	the instance of the Console
+		 * @return	the instance of the Console
 		 */
 		public static function getInstance():Console
 		{
@@ -185,7 +185,7 @@ package as3.hv.core.console
 		 * ---------------------------------------------------------------------
 		 * the conole is only available for debugging if it was added to the stage
 		 * 
-		 * @returns 	returns true if console was added to stage
+		 * @return	returns true if console was added to stage
 		 */
 		public static function isConsoleAvailable():Boolean
 		{
@@ -293,8 +293,15 @@ package as3.hv.core.console
 				this.cmdLine.height = CMDLINE_HEIGHT;
 				this.cmdLine.x = CMDLINE_MARGIN_X;
 				this.cmdLine.y = currentHeight - CMDLINE_MARGIN_Y - CMDLINE_HEIGHT;
-				this.cmdLine.addEventListener(KeyboardEvent.KEY_UP, keyUpHandler);
 				
+				this.cmdLine.addEventListener(
+						KeyboardEvent.KEY_UP, 
+						keyUpHandler
+					);
+				this.cmdLine.addEventListener(
+						FocusEvent.FOCUS_IN, 
+						focusInHandler
+					);
 				this.resizeHandle.visible = true;
 			}
 		}
@@ -357,14 +364,51 @@ package as3.hv.core.console
 		 * setToggleKey
 		 * ---------------------------------------------------------------------
 		 * for changing the visibility toggle key.
-		 * Default key is ^ 
+		 * Default key is F1
 		 *
-		 * @param key 		key as uint from Keyboard class e.g. Keyboard.F1
-		 *					or a keycode uint
+		 * @param key	as uint from Keyboard class e.g. Keyboard.F1
+		 *				or a keycode uint
 		 */
 		public function setToggleKey(key:uint):void
 		{
 			this.toggleKey = key;
+		}
+		
+		public function doAutoComplete(cmdstring:String):void
+		{
+			if( cmdstring == "" )
+				return;
+			
+			var arrCmd:Array = cmdstring.split(" ");
+			
+			if( arrCmd.length == 0 ) 
+				return;
+			
+			var cmdKey:String = String(arrCmd.shift()).toLowerCase();
+			var cmdIdx:int = arrCommandKeys.indexOf(cmdKey);
+			
+			if( cmdIdx == -1 )
+			{
+				// case 1: complete the command
+				var filtered:Array = AutoCompleter.filterList(cmdKey, arrCommandKeys);
+				cmdstring = AutoCompleter.findBestMatch(cmdKey, filtered);
+				
+				// re-check index
+				cmdIdx = arrCommandKeys.indexOf(cmdstring);
+				if( cmdIdx > -1 )
+				{
+					if ( IConsoleCommand(this.arrCommands[cmdIdx]).usesArguments() )
+						cmdstring += " ";
+				}
+				this.cmdLine.text = cmdstring;
+
+			} else {
+				// case 2: check if the command itself supports auto completion
+				if( !(this.arrCommands[cmdIdx] is IAutoCompleteable) )
+					return;
+					
+				this.cmdLine.text = IAutoCompleteable(this.arrCommands[cmdIdx]).doAutoComplete(arrCmd);
+			}
 		}
 		
 		/**
@@ -375,58 +419,58 @@ package as3.hv.core.console
 		 * doCommand function if the command was found.
 		 * Error handling on wrong arguments is done in the command class itself.
 		 * 
-		 * @param cmdstring		commandstring with arguments
+		 * @param cmdstring	commandstring with arguments
 		 */
-		public function doCommand(cmdstring:String) 
+		public function doCommand(cmdstring:String):void
 		{	
+			if( cmdstring == "" )
+				return;
+				
 			var arrCmd:Array = cmdstring.split(" ");
 			var cmdKey:String = "";
 			var cmdIdx:int = -1;
 			var cmd:IConsoleCommand = null;
 			
-			if( cmdstring != "" )
+			if( arrCmd.length == 0 ) 
+				return;
+				
+			cmdKey = String(arrCmd.shift()).toLowerCase();
+			cmdIdx = arrCommandKeys.indexOf(cmdKey);
+			
+			if( cmdIdx > -1 ) 
 			{
-				if( arrCmd.length > 0 ) 
+				this.writeln(
+						"CMD: "+cmdstring,
+						DebugLevel.COMMAND,
+						null,
+						false
+					);
+				
+				cmd = IConsoleCommand(this.arrCommands[cmdIdx]);
+				
+				if( cmd is CmdHelp ) 
 				{
-					cmdKey = String(arrCmd.shift()).toLowerCase();
-					cmdIdx = arrCommandKeys.indexOf(cmdKey);
-					
-					if( cmdIdx > -1 ) 
+					// special case show help
+					if( arrCmd.length == 0 ) 
 					{
-						this.writeln(
-								"CMD: "+cmdstring,
-								DebugLevel.COMMAND,
-								null,
-								false
-							);
-						
-						cmd = IConsoleCommand(this.arrCommands[cmdIdx]);
-						
-						if( cmd is CmdHelp ) 
-						{
-							// special case show help
-							if( arrCmd.length == 0 ) 
-							{
-								// command list
-								cmd.doCommand(this.arrCommands);
-							} else {
-								// command help
-								cmdIdx = arrCommandKeys.indexOf(arrCmd[0]);
-								if( cmdIdx > -1 )
-									cmd.doCommand(new Array(this.arrCommands[cmdIdx]));
-							}
-						} else {
-							// execute command
-							cmd.doCommand(arrCmd);
-						}
-					
+						// command list
+						cmd.doCommand(this.arrCommands);
 					} else {
-						this.writeln(
-								"UNKOWN CMD: "+cmdstring,
-								DebugLevel.COMMAND_ERROR
-							);
+						// command help
+						cmdIdx = arrCommandKeys.indexOf(arrCmd[0]);
+						if( cmdIdx > -1 )
+							cmd.doCommand(new Array(this.arrCommands[cmdIdx]));
 					}
+				} else {
+					// execute command
+					cmd.doCommand(arrCmd);
 				}
+			
+			} else {
+				this.writeln(
+						"UNKOWN CMD: "+cmdstring,
+						DebugLevel.COMMAND_ERROR
+					);
 			}
 		}
 		
@@ -437,13 +481,13 @@ package as3.hv.core.console
 		 * register a command to the available command list.
 		 * if you register a existing key, the old command is overridden. 
 		 * 
-		 * @param key		command string
-		 * @param cmd 		command class 
+		 * @param key	command string
+		 * @param cmd	command class 
 		 */
 		public function registerCommand(
 				key:String, 
 				cmd:IConsoleCommand
-			)
+			):void
 		{
 			var idx:int = this.arrCommandKeys.indexOf(key);
 			
@@ -463,7 +507,7 @@ package as3.hv.core.console
 		 * newLine
 		 * ---------------------------------------------------------------------
 		 */
-		public function newLine()
+		public function newLine():void
 		{
 			this.txtOutput.htmlText = this.txtOutput.htmlText 
 					+ "<font size='5'><br></font>";
@@ -477,7 +521,7 @@ package as3.hv.core.console
 		 * clearOutput
 		 * ---------------------------------------------------------------------
 		 */
-		public function clearOutput()
+		public function clearOutput():void
 		{
 			this.txtOutput.htmlText = "";
 			
@@ -829,12 +873,6 @@ package as3.hv.core.console
 		 */
 		private function keyUpHandler(e:KeyboardEvent):void 
 		{
-			// complete comand
-			if( e.keyCode == Keyboard.TAB )
-			{
-				//TODO				
-			}
-			
 			//UpArrow = 38
 			if( e.keyCode == Keyboard.UP 
 					&& arrCmdStack.length > 0)
@@ -867,12 +905,23 @@ package as3.hv.core.console
 					)
 				return;
 			}
-				
+			
+			// clean command
+			var cmd:String = StringHelper.trim(this.cmdLine.text," ");
+			
+			if( e.keyCode == Keyboard.CONTROL )
+			{
+				doAutoComplete(cmd);
+				// dont forget caret
+				this.cmdLine.setSelection(
+						this.cmdLine.text.length, 
+						this.cmdLine.text.length
+					)
+				return;
+			}
+			
 			if( e.keyCode == Keyboard.ENTER )
 			{
-				// clean command
-				var cmd:String = StringHelper.trim(this.cmdLine.text," ");
-				
 				// update stack
 				arrCmdStack.push(cmd);
 				cmdStackIdx = -1;
@@ -890,8 +939,8 @@ package as3.hv.core.console
 		 * toggleConsole Event
 		 * ---------------------------------------------------------------------
 		 * toggles the consoles visiblity by hitting the toggle key.
-		 
-		 * @param e 		KeyboardEvent
+		 *
+		 * @param e	KeyboardEvent
 		 */
 		private function toggleConsole(e:KeyboardEvent):void 
 		{
@@ -901,11 +950,25 @@ package as3.hv.core.console
 		
 		/**
 		 * ---------------------------------------------------------------------
+		 * focusInHandler Event
+		 * ---------------------------------------------------------------------
+		 * clears the command line if the default text is shown.
+		 *
+		 * @param e	FocusEvent
+		 */
+		private function focusInHandler(e:FocusEvent):void 
+		{
+			if ( this.cmdLine.text == this.cmdDefault )
+				this.cmdLine.text = "";
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
 		 * startScroll Event
 		 * ---------------------------------------------------------------------
 		 * scrollbar -> textfield
 		 *
-		 * @param e 		MouseEvent
+		 * @param e	MouseEvent
 		 */
 		private function startScroll(e:MouseEvent):void
 		{

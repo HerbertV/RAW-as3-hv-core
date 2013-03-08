@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -32,11 +32,12 @@ package as3.hv.core.console
 	
 	import as3.hv.core.shapes.PenroseTriangle;
 
-	// =========================================================================
-	// Class UIButtonMinMax
-	// =========================================================================
-	// Default Button for minimizing/maximizing its related view
-	//
+	/**
+	 * =========================================================================
+	 * Class UIButtonMinMax
+	 * =========================================================================
+	 * Default Button for minimizing/maximizing its related view
+	 */
 	public class UIButtonMinMax 
 			extends Sprite
 	{
@@ -47,10 +48,11 @@ package as3.hv.core.console
 		
 		private var isMaxState:Boolean = true;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
-		//
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function UIButtonMinMax()
 		{
 			super();

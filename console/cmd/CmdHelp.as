@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -23,9 +23,11 @@ package as3.hv.core.console.cmd
 	import as3.hv.core.console.Console;
 	import as3.hv.core.console.DebugLevel;
 	
-	// =========================================================================
-	// Class CmdHelp
-	// =========================================================================
+	/**
+	 * =========================================================================
+	 * Class CmdHelp
+	 * =========================================================================
+	 */
 	public class CmdHelp 
 			implements IConsoleCommand 
 	{
@@ -34,9 +36,11 @@ package as3.hv.core.console.cmd
 		// =====================================================================	
 		public static const CMD:String = "help";
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function CmdHelp()
 		{
 		
@@ -68,6 +72,19 @@ package as3.hv.core.console.cmd
 			}
 			Console.getInstance().writeln(msg, DebugLevel.COMMAND, null, false);
 			Console.getInstance().newLine();
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * @see IConsoleCommand 
+		 *
+		 * @return
+		 */
+		public function usesArguments():Boolean
+		{
+			return true;
 		}
 		
 		/**

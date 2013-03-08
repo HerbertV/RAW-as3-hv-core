@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -29,12 +29,13 @@ package as3.hv.core.console
 	
 	import as3.hv.core.shapes.EdgedRectangle;
 
-	// =========================================================================
-	// Class AbstractMonitoringView
-	// =========================================================================
-	// Abstract base for all Views that are used to monitor something.
-	// E.g. fps, memory ...
-	//
+	/**
+	 * =========================================================================
+	 * Class AbstractMonitoringView
+	 * =========================================================================
+	 * Abstract base for all Views that are used to monitor something.
+	 * E.g. fps, memory ...
+	 */
 	public class AbstractMonitoringView 
 			extends AbstractConsoleView
 	{
@@ -65,11 +66,10 @@ package as3.hv.core.console
 		
 		protected var lowIsGood:Boolean = true;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
 		/**
+		 * =====================================================================
 		 * Constructor 
+		 * =====================================================================
 		 *
 		 * @param w 		width of this view
 		 * @param h			height of this view
@@ -80,8 +80,6 @@ package as3.hv.core.console
 			)
 		{
 			super(w,h);
-			
-			
 		}
 		
 		// =====================================================================

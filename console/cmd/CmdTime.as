@@ -13,7 +13,7 @@
  * @version: 2.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2009-2012 Herbert Veitengruber 
+ * Copyright (c) 2009-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -25,9 +25,11 @@ package as3.hv.core.console.cmd
 	
 	import as3.hv.core.utils.DateTimeFormatter;
 	
-	// =========================================================================
-	// Class CmdTime
-	// =========================================================================
+	/**
+	 * =========================================================================
+	 * Class CmdTime
+	 * =========================================================================
+	 */
 	public class CmdTime 
 			implements IConsoleCommand 
 	{
@@ -43,9 +45,11 @@ package as3.hv.core.console.cmd
 		
 		private static var isTimeSet:Boolean = false;
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
+		/**
+		 * =====================================================================
+		 * Constructor
+		 * =====================================================================
+		 */
 		public function CmdTime()
 		{
 			if( !CmdTime.isTimeSet )
@@ -90,6 +94,18 @@ package as3.hv.core.console.cmd
 				);
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * usesArguments
+		 * ---------------------------------------------------------------------
+		 * @see IConsoleCommand 
+		 *
+		 * @return
+		 */
+		public function usesArguments():Boolean
+		{
+			return false;
+		}
 		
 		/**
 		 * ---------------------------------------------------------------------
