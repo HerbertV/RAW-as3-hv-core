@@ -57,7 +57,7 @@ package as3.hv.core.console.cmd
 		 *
 		 * @param args 		not used by this command
 		 */
-		public function doCommand(args:Array):void
+		public function doCommand(args:Array=null):void
 		{
 			Console.getInstance().visible = false;
 		}

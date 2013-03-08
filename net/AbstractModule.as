@@ -145,7 +145,7 @@ package as3.hv.core.net
 		 *						or 2-letter-language-code
 		 */
 		public function updateLanguage(
-				newLangCode:String
+				newLangCode:String=null
 			):void
 		{
 			// override if you need me

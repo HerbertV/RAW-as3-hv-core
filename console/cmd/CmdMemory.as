@@ -182,7 +182,7 @@ package as3.hv.core.console.cmd
 		 *
 		 * @param args 		
 		 */
-		public function doCommand(args:Array):void
+		public function doCommand(args:Array=null):void
 		{			
 			if( this.stage == null )
 				Console.getInstance().parent.addChild(this);

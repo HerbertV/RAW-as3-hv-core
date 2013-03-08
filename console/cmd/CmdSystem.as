@@ -62,7 +62,7 @@ package as3.hv.core.console.cmd
 		 *
 		 * @param args 	not use by system		
 		 */
-		public function doCommand(args:Array):void
+		public function doCommand(args:Array=null):void
 		{
 			var msg:String =  "<b>Systeminfo</b><br>" 
 					+ "Flash Player: " + Capabilities.version 

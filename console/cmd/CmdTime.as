@@ -68,7 +68,7 @@ package as3.hv.core.console.cmd
 		 *
 		 * @param args 		not used by this command
 		 */
-		public function doCommand(args:Array):void
+		public function doCommand(args:Array=null):void
 		{
 			var now:Date = new Date();
 			var d:Number = now.time - startTime.time;
