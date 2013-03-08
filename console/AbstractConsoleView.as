@@ -104,6 +104,8 @@ package as3.hv.core.console
 			currentWidth = minWidth = maxWidth = w;
 			currentHeight = minHeight = maxHeight = h;
 			
+			this.tabChildren = false;
+			
 			this.addEventListener(
 					Event.ADDED_TO_STAGE, 
 					this.addedToStage, 
