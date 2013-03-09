@@ -10,10 +10,10 @@
  *
  * -----------------------------------------------------------------------------
  * @author: Herbert Veitengruber 
- * @version: 1.0.0
+ * @version: 1.1.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2010-2012 Herbert Veitengruber 
+ * Copyright (c) 2010-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -28,11 +28,12 @@ package as3.hv.core.net
 	
 	import flash.text.TextField;
 	
-	// =========================================================================
-	// Class HTMLLoader
-	// =========================================================================
-	// for loading HTML files into a text field.
-	//
+	/**
+	 * =========================================================================
+	 * Class HTMLLoader
+	 * =========================================================================
+	 * for loading HTML files into a text field.
+	 */
 	public class HTMLLoader 
 			extends AssetURLLoader 
 	{
@@ -45,13 +46,10 @@ package as3.hv.core.net
 				
 		private var myTarget:TextField = null;
 		
-		
-		// =====================================================================
-		// Constructors
-		// =====================================================================
-		
 		/**
+		 * =====================================================================
 		 * Constructor
+		 * =====================================================================
 		 * 
 		 * @param file filename with relative/absolute path
 		 * @param name (optional)
@@ -71,19 +69,6 @@ package as3.hv.core.net
 		// =====================================================================
 		// Functions
 		// =====================================================================
-		
-		/**
-		 * ---------------------------------------------------------------------
-		 * loadFile
-		 * ---------------------------------------------------------------------
-		 *
-		 * @param file 
-		 */
-		public function loadFile(file:String):void 
-		{
-			this.filename = file;
-			this.load();
-		}
 		
 		/**
 		 * ---------------------------------------------------------------------

@@ -44,9 +44,9 @@ package as3.hv.core.console.cmd
 		 * ---------------------------------------------------------------------
 		 * Execute this command. 
 		 *
-		 * @param args 		array of arguments.
+		 * @param args array of arguments can be null if command needs no args.
 		 */
-		function doCommand(args:Array):void;
+		function doCommand(args:Array=null):void;
 		
 		/**
 		 * ---------------------------------------------------------------------

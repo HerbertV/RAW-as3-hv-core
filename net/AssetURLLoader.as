@@ -49,12 +49,18 @@ package as3.hv.core.net
 		
 		/**
 		 * =====================================================================
-		 * Constructor		
+		 * Constructor
 		 * =====================================================================
+		 * 
+		 * @param file filename with relative/absolute path
+		 * @param name (optional)
 		 */
-		public function AssetURLLoader()
+		public function AssetURLLoader(
+				file:String,
+				name:String = ""
+			)
 		{
-			super();
+			super(file,name);
 		}
 		
 		
@@ -64,19 +70,15 @@ package as3.hv.core.net
 		
 		/**
 		 * ---------------------------------------------------------------------
-		 * loadFile
+		 * load
 		 * ---------------------------------------------------------------------
 		 * overridden to init the loader and add the event listeners 
-		 *
-		 * @param file		filename with relative/absolute path
 		 */
-		override public function loadFile(file:String)
+		override public function load():void
 		{
-			super.loadFile(file);
-			
-			this.myLoader = new URLLoader(new URLRequest(filename));
+			this.myLoader = new URLLoader();
 			this.myLoader.dataFormat = this.defaultDataFormat;
-			this.myLoader.load(new URLRequest(file));
+			this.myLoader.load(new URLRequest(this.filename));
 			
 			this.myLoader.addEventListener(
 					IOErrorEvent.IO_ERROR, 
@@ -90,6 +92,22 @@ package as3.hv.core.net
 					Event.COMPLETE, 
 					completeHandler
 				);
+        }
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * loadFile
+		 * ---------------------------------------------------------------------
+		 *
+		 * @param file filename with relative/absolute path
+		 */
+		public function loadFile(file:String)
+		{
+			if( file == null || file == "" )
+				throw new Error(this.myName + " has no filename");
+			
+			this.filename = file;
+			this.load();
         }
 		
 		/**
@@ -150,6 +168,9 @@ package as3.hv.core.net
 		override protected function completeHandler(e:Event):void 
 		{
 			super.completeHandler(e);
+			
+			if( this.myLoader == null )
+				return;
 			
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 

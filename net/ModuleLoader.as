@@ -13,7 +13,7 @@
  * @version: 1.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2010-2012 Herbert Veitengruber 
+ * Copyright (c) 2010-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -34,11 +34,12 @@ package as3.hv.core.net
 	import as3.hv.core.console.Console;
 	import as3.hv.core.console.DebugLevel;
 		
-	// =========================================================================
-	// Class ModuleLoader
-	// =========================================================================
-	// for loading AbstractModules.
-	//
+	/**
+	 * =========================================================================
+	 * Class ModuleLoader
+	 * =========================================================================
+	 * for loading AbstractModules.
+	 */
 	public class ModuleLoader
 			extends AssetLoader 
 	{
@@ -53,12 +54,10 @@ package as3.hv.core.net
 		
 		protected var moduleVersion:String = "";
 		
-		// =====================================================================
-		// Constructors
-		// =====================================================================
-		
 		/**
+		 * =====================================================================
 		 * Constructor
+		 * =====================================================================
 		 * 
 		 * @param file filename with relative/absolute path
 		 * @param target

@@ -44,7 +44,7 @@ package as3.hv.core.net
 		// Variables
 		// =====================================================================
 		
-		private var endian:Endian;
+		private var endian:String;
 		
 		private var bytes:ByteArray;
 		
@@ -53,11 +53,17 @@ package as3.hv.core.net
 		 * Constructor		
 		 * =====================================================================
 		 * 
+		 * @param file
+		 * @param name
 		 * @param e LITTLE_ENDIAN or BIG_ENDIAN
 		 */
-		public function BinaryLoader(e:Endian=Endian.LITTLE_ENDIAN)
+		public function BinaryLoader(
+				file:String,
+				name:String = "BinaryLoader",
+				e:String = Endian.LITTLE_ENDIAN
+			)
 		{
-			super();
+			super(file,name);
 			
 			this.endian = e;
 			this.defaultDataFormat = URLLoaderDataFormat.BINARY;

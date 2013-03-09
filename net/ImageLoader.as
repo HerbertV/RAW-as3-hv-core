@@ -13,7 +13,7 @@
  * @version: 1.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2010-2012 Herbert Veitengruber 
+ * Copyright (c) 2010-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -33,11 +33,12 @@ package as3.hv.core.net
 	import flash.events.ProgressEvent;
 	
 	
-	// =========================================================================
-	// Class ImageLoader
-	// =========================================================================
-	// for loading Images.
-	//
+	/**
+	 * =========================================================================
+	 * Class ImageLoader
+	 * =========================================================================
+	 * for loading Images.
+	 */
 	public class ImageLoader 
 			extends AssetLoader 
 	{
@@ -48,13 +49,10 @@ package as3.hv.core.net
 		// target container where the image is loaded into.
 		private var targetContainer:MovieClip = null;
 		
-		
-		// =====================================================================
-		// Constructors
-		// =====================================================================
-		
 		/**
+		 * =====================================================================
 		 * Constructor
+		 * =====================================================================
 		 * 
 		 * @param file filename with relative/absolute path
 		 * @param name (optional)

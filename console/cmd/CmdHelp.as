@@ -58,7 +58,7 @@ package as3.hv.core.console.cmd
 		 *
 		 * @param args 	array of arguments.
 		 */
-		public function doCommand(args:Array):void
+		public function doCommand(args:Array=null):void
 		{
 			var msg:String = "Available Commands:<br/>"
 			

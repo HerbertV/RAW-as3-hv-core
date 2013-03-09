@@ -13,7 +13,7 @@
  * @version: 1.0.0
  * -----------------------------------------------------------------------------
  *
- * Copyright (c) 2010-2012 Herbert Veitengruber 
+ * Copyright (c) 2010-2013 Herbert Veitengruber 
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/mit-license.php
@@ -27,12 +27,13 @@ package as3.hv.core.net
 	import flash.display.Loader;
 	import flash.net.URLRequest;
 	
-	// =========================================================================
-	// Class AssetLoader
-	// =========================================================================
-	// This loader is based on flash.display.Loader, so it is usefull for
-	// loading images, SWFs and FLVs.
-	// 
+	/**
+	 * =========================================================================
+	 * Class AssetLoader
+	 * =========================================================================
+	 * This loader is based on flash.display.Loader, so it is usefull for
+	 * loading images, SWFs and FLVs.
+	 */ 
 	public class AssetLoader
 			extends AbstractLoader
 	{
@@ -42,11 +43,10 @@ package as3.hv.core.net
 		protected var myLoader:Loader = null;
 		
 		
-		// =====================================================================
-		// Constructor
-		// =====================================================================
 		/**
+		 * =====================================================================
 		 * Constructor
+		 * =====================================================================
 		 * 
 		 * @param file filename with relative/absolute path
 		 * @param name (optional)
