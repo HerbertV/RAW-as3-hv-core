@@ -10,7 +10,7 @@
  *
  * -----------------------------------------------------------------------------
  * @author: Herbert Veitengruber 
- * @version: 2.0.1
+ * @version: 2.0.2
  * -----------------------------------------------------------------------------
  *
  * Copyright (c) 2009-2013 Herbert Veitengruber 
@@ -66,7 +66,7 @@ package as3.hv.core.console
 		// Constants
 		// =====================================================================
 		// Class version
-		public static const VERSION:String = "2.0.1";
+		public static const VERSION:String = "2.0.2";
 		
 		public static const CMDLINE_MARGIN_X:Number = 10;
 		public static const CMDLINE_MARGIN_Y:Number = 4;
@@ -944,8 +944,11 @@ package as3.hv.core.console
 		 */
 		private function toggleConsole(e:KeyboardEvent):void 
 		{
-			if (e.keyCode == this.toggleKey)
+			if( e.keyCode == this.toggleKey )
 				this.visible = !this.visible;
+				
+			if( this.visible )
+				this.updateScrollbar();
 		}
 		
 		/**
@@ -958,7 +961,7 @@ package as3.hv.core.console
 		 */
 		private function focusInHandler(e:FocusEvent):void 
 		{
-			if ( this.cmdLine.text == this.cmdDefault )
+			if( this.cmdLine.text == this.cmdDefault )
 				this.cmdLine.text = "";
 		}
 		
