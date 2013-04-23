@@ -54,6 +54,18 @@ package as3.hv.core.xml
 		// the xml
 		protected var myXML:XML = null;
 				
+		protected var myFilename:String;
+		
+		protected var loadingFinished:Boolean = false;
+		protected var loadingFailed:Boolean = false;
+		
+		protected var parsingFinished:Boolean = false;
+		protected var parsingFailed:Boolean = false;
+		protected var parseStep:int = 0;
+		
+		protected var myProgressSymbol:IProgressSymbol = null;
+		
+				
 		/**
 		 * =====================================================================
 		 * Contructor
@@ -63,6 +75,7 @@ package as3.hv.core.xml
 		{
 			super();
 			
+			this.myXML = new XML();
 		}
 		
 		// =====================================================================
@@ -111,7 +124,136 @@ package as3.hv.core.xml
 			return true;	
 		}
 		
+		/**
+		 * ---------------------------------------------------------------------
+		 * initFrameBasedParsing
+		 * ---------------------------------------------------------------------
+		 * in most cases unneccesary, but complex/large xmls where xml info needs
+		 * to be converted into a object structure, this can be usefull.
+		 * 
+		 * @param parentClip
+		 * @param progressSym
+		 */
+		public function initFrameBasedParsing(
+				parentClip:MovieClip, 
+				progressSym:IProgressSymbol = null
+			)
+		{
+			this.parsingFinished = false;
+			this.parsingFailed = false;
+			this.parseStep = 0;
+			
+			this.myProgressSymbol = progressSym;
+			
+			parentClip.addChild(this);
+			this.addEventListener(Event.ENTER_FRAME,enterFrameHandler);
 		
+			if( this.myProgressSymbol != null )
+				this.myProgressSymbol.init();
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * loadXML
+		 * ---------------------------------------------------------------------
+		 * abstract
+		 * 
+		 * @param filename
+		 * @param progressSym
+		 */
+		public function loadXML(
+				filename:String, 
+				progressSym:IProgressSymbol = null
+			):void
+		{
+			// Abstract NEEDS OVEERRIDE
+			trace("AbstractXMLProcessor.loadXML: NEEDS OVEERRIDE");
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * getXML
+		 * ---------------------------------------------------------------------
+		 * @return 
+		 */
+		final public function getXML():XML 
+		{
+			return this.myXML;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * setXML
+		 * ---------------------------------------------------------------------
+		 * param xmldoc 
+		 */
+		final public function setXML(xmldoc:XML) 
+		{
+			this.myXML = xmldoc;
+		}
+				
+		/**
+		 * ---------------------------------------------------------------------
+		 * isLoadingFinished
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function isLoadingFinished():Boolean
+		{
+			return this.loadingFinished;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * isLoadingFailed
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function isLoadingFailed():Boolean
+		{
+			return this.loadingFailed;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * isParsingFinished
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function isParsingFinished():Boolean
+		{
+			return this.parsingFinished;
+		}
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * isParsingFailed
+		 * ---------------------------------------------------------------------
+		 * @return
+		 */
+		final public function isParsingFailed():Boolean
+		{
+			return this.parsingFailed;
+		}
+		
+		// =====================================================================
+		// Event Handler
+		// =====================================================================
+		
+		/**
+		 * ---------------------------------------------------------------------
+		 * enterFrameHandler
+		 * ---------------------------------------------------------------------
+		 * abstract
+		 * 
+		 * @param e
+		 */
+		protected function enterFrameHandler(e:Event):void 
+		{
+			// Abstract NEEDS OVEERRIDE
+			trace("AbstractXMLProcessor.enterFrameHandler: NEEDS OVEERRIDE");
+			this.removeEventListener(Event.ENTER_FRAME,enterFrameHandler);
+		}
 	}
 
 }
