@@ -27,6 +27,10 @@ package as3.hv.core.xml
 	
 	import as3.hv.components.progress.IProgressSymbol;
 	
+	import as3.hv.core.console.Console;
+	import as3.hv.core.console.DebugLevel;
+	
+	
 	/**
 	 * =========================================================================
 	 * Class AbstractXMLProcessor

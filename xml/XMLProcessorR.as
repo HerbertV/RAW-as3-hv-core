@@ -153,14 +153,14 @@ package as3.hv.core.xml
 				);
 			this.myLoader.removeEventListener(
 					IOErrorEvent.IO_ERROR, 
-					errorIOHandler
+					ioErrorHandler
 				);
 			
 			if( Console.isConsoleAvailable() )
 				Console.getInstance().writeln(
 						"loading finished: ",
 						DebugLevel.INFO,
-						filename
+						this.myFilename
 					);
 			
 			this.dispatchEvent(new Event(Event.COMPLETE));
@@ -179,8 +179,8 @@ package as3.hv.core.xml
 				Console.getInstance().writeln(
 						"IO Error while loading XML: ",
 						DebugLevel.ERROR,
-						filename
-							+ "<br>" + e.message
+						this.myFilename
+							+ "<br>" + e.toString()
 					);
 				Console.getInstance().newLine();
 			}
