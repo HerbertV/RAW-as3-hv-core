@@ -96,12 +96,12 @@ package as3.hv.core.xml
 				xmldoc:XML
 			):Boolean
 		{
-			if( xmldoc.name().localName != XMLROOTTAG )
+			if( xmldoc.name().localName != AbstractXMLProcessor.XMLROOTTAG )
 			{
 				if( Console.isConsoleAvailable() )
 				{
 					Console.getInstance().writeln(
-							"Not a valid " + XMLROOTTAG + " XML.",
+							"Not a valid " + AbstractXMLProcessor.XMLROOTTAG + " XML.",
 								DebugLevel.FATAL_ERROR
 							);
 					Console.getInstance().newLine();
@@ -109,12 +109,12 @@ package as3.hv.core.xml
 				return false;
 			}
 			
-			if( xmldoc.@XMLVersion != XMLDOCVERSION )
+			if( xmldoc.@XMLVersion != AbstractXMLProcessor.XMLDOCVERSION )
 			{
 				if( Console.isConsoleAvailable() )
 				{
 					Console.getInstance().writeln(
-							"XML doc version is not " + XMLDOCVERSION,
+							"XML doc version is not " + AbstractXMLProcessor.XMLDOCVERSION,
 								DebugLevel.FATAL_ERROR
 							);
 					Console.getInstance().newLine();
