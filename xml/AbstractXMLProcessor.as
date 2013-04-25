@@ -21,6 +21,11 @@
 package as3.hv.core.xml 
 {
 	import flash.display.Sprite;
+	import flash.display.MovieClip;
+	
+	import flash.events.Event;
+	
+	import as3.hv.components.progress.IProgressSymbol;
 	
 	/**
 	 * =========================================================================
